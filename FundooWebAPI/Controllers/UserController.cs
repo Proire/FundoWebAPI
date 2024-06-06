@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using UserBLL.Interface;
 using UserModelLayer;
+using UserRLL.Entity;
 using UserRLL.Exceptions;
 
 namespace FundooWebAPI.Controllers
@@ -17,7 +18,8 @@ namespace FundooWebAPI.Controllers
             responeModel = new ResponseModel(); 
         }
         [HttpPost]
-        public ResponseModel RegisterUser([FromBody] UserModel user)
+        [Route("/register")]
+        public ResponseModel Register([FromBody] UserModel user)
         {
             UserModel model = null;
             try
@@ -33,5 +35,24 @@ namespace FundooWebAPI.Controllers
             }
             return responeModel;
         }
+        [HttpPost]
+        [Route("/login")]
+        public ResponseModel Login([FromBody] LoginModel model)
+        {
+            UserEntity user = null;
+            try
+            {
+                user = userBLL.Login(model);
+                responeModel.message = "Loggedin Successfully!";
+                responeModel.data = user.ToString();
+            }
+            catch (UserException ex)
+            {
+                responeModel.status=false;
+                responeModel.message = ex.Message;
+            }
+            return responeModel;
+        }
+
     }
 }
