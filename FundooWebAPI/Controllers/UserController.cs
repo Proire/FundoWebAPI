@@ -27,6 +27,7 @@ namespace FundooWebAPI.Controllers
                 return NotFound(ex.Message);
             }
             return Ok(model);
+
         }
     }
 }
