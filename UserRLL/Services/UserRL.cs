@@ -39,7 +39,7 @@ namespace UserRLL.Services
             bool isuser = Context.Users.Any(x=>x.UserName==model.UserName);
             if (isuser)
             {
-                UserEntity user = Context.Users.FirstOrDefault(x => x.UserName == model.UserName && x.Password == model.Password);
+                UserEntity? user = Context.Users.FirstOrDefault(x => x.UserName == model.UserName && x.Password == model.Password);
                 if (user != null && user.Password==model.Password) 
                 { 
                     return user; 
