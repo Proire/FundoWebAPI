@@ -7,6 +7,8 @@ using UserBLL.Interface;
 using UserModelLayer;
 using UserRLL.Services;
 using UserRLL.Interface;
+using UserRLL.Entity;
+using UserRLL.Exceptions;
 
 namespace UserBLL.Service
 {
@@ -32,6 +34,21 @@ namespace UserBLL.Service
                 throw;
             }
             return userModel;
+        }
+
+        public UserEntity Login(LoginModel login)
+        {
+            UserEntity userEntity = null;
+            try
+            {
+                userEntity = userRll.LoginUser(login);
+            }
+            catch(UserException ie)
+            {
+                Console.WriteLine(ie.Message);
+                throw;
+            }
+            return userEntity;
         }
     }
 }

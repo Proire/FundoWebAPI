@@ -31,5 +31,10 @@ namespace UserRLL.Entity
         [RegularExpression(@"^\d{10}$", ErrorMessage = "Invalid phone number format. It should be 10 digits.")]
         public string PhoneNumber { get; set; }
 
+        public override string ToString()
+        {
+            return $"{Id}, {Name}, {UserName}, {Password}, {PhoneNumber}";
+        }
+
     }
 }

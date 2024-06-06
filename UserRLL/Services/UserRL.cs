@@ -33,5 +33,23 @@ namespace UserRLL.Services
             }
             return user;
         }
+
+        public UserEntity LoginUser(LoginModel model)
+        {
+            bool isuser = Context.Users.Any(x=>x.UserName==model.UserName);
+            if (isuser)
+            {
+                UserEntity user = Context.Users.FirstOrDefault(x => x.UserName == model.UserName && x.Password == model.Password);
+                if (user != null && user.Password==model.Password) 
+                { 
+                    return user; 
+                }
+                else { throw new UserException("Wrong Password, ReEnter Password"); }
+            }
+            else
+            {
+                throw new UserException("Invalid UserName, Register First");
+            }
+        }
     }
 }

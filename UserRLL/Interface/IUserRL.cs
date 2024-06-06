@@ -11,5 +11,6 @@ namespace UserRLL.Interface
     public interface IUserRL
     {
         UserModel AddUser(UserModel user);
+        UserEntity LoginUser(LoginModel login);
     }
 }
