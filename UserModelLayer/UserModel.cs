@@ -11,5 +11,10 @@ namespace UserModelLayer
         public string Password { get; set; }
 
         public string PhoneNumber { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name}, {UserName}, {Password}, {PhoneNumber}";
+        }
     }
 }

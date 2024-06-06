@@ -10,24 +10,28 @@ namespace FundooWebAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserBL userBLL;
+        private readonly ResponseModel responeModel;
         public UserController(IUserBL userBLL) 
         {
             this.userBLL = userBLL;
+            responeModel = new ResponseModel(); 
         }
         [HttpPost]
-        public IActionResult AddUser([FromBody] UserModel user)
+        public ResponseModel RegisterUser([FromBody] UserModel user)
         {
             UserModel model = null;
             try
             {
                 model = userBLL.AddUser(user);
+                responeModel.message = "User Added SuccessFully";
+                responeModel.data = model.ToString();
             }
             catch(UserException ex)
             {
-                return NotFound(ex.Message);
+                responeModel.status = false;
+                responeModel.message = ex.Message;
             }
-            return Ok(model);
-
+            return responeModel;
         }
     }
 }
