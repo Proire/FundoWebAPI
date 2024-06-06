@@ -8,6 +8,7 @@ using UserRLL.Context;
 using UserRLL.Entity;
 using UserRLL.Interface;
 using UserRLL.Exceptions;
+using UserRLL.Utilities;
 
 namespace UserRLL.Services
 {
@@ -20,6 +21,7 @@ namespace UserRLL.Services
 
         public UserModel AddUser(UserModel user)
         {
+            user.Password = PasswordHasher.HashPassword(user.Password);
             UserEntity userEntity = new UserEntity() { Name=user.Name,UserName = user.UserName, Password=user.Password,PhoneNumber=user.PhoneNumber};
             try
             {
@@ -39,8 +41,8 @@ namespace UserRLL.Services
             bool isuser = Context.Users.Any(x=>x.UserName==model.UserName);
             if (isuser)
             {
-                UserEntity? user = Context.Users.FirstOrDefault(x => x.UserName == model.UserName && x.Password == model.Password);
-                if (user != null && user.Password==model.Password) 
+                UserEntity? user = Context.Users.FirstOrDefault(x => x.UserName == model.UserName);
+                if (user != null && PasswordHasher.VerifyPassword(model.Password,user.Password)) 
                 { 
                     return user; 
                 }
