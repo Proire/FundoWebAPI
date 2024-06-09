@@ -36,6 +36,11 @@ namespace UserRLL.Services
             return user;
         }
 
+        public IEnumerable<UserEntity> GetUsers()
+        {
+            return Context.Users.ToList();
+        }
+
         public UserEntity LoginUser(LoginModel model)
         {
             bool isuser = Context.Users.Any(x=>x.UserName==model.UserName);

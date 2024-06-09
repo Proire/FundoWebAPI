@@ -36,6 +36,11 @@ namespace UserBLL.Service
             return userModel;
         }
 
+        public IEnumerable<UserEntity> GetUsers()
+        {
+            return userRll.GetUsers();
+        }
+
         public UserEntity Login(LoginModel login)
         {
             UserEntity userEntity = null;

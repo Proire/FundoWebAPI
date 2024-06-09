@@ -12,5 +12,7 @@ namespace UserRLL.Interface
     {
         UserModel AddUser(UserModel user);
         UserEntity LoginUser(LoginModel login);
+
+        IEnumerable<UserEntity> GetUsers();
     }
 }

@@ -12,5 +12,7 @@ namespace UserBLL.Interface
     {
         UserModel AddUser(UserModel model);
         UserEntity Login(LoginModel login);
+
+        IEnumerable<UserEntity> GetUsers();
     }
 }
