@@ -27,11 +27,7 @@ namespace FundooWebAPI
             // Getting Configuration object which now represents appsettings.json inside our program
             var configuration = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json").Build();
             // JWT Authentication service 
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,options =>
+            builder.Services.AddAuthentication( JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,options =>
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -39,13 +35,7 @@ namespace FundooWebAPI
                 ValidateIssuer = true,
                 ValidIssuer = configuration["JWT:ValidIssuer"],
                 ValidAudience = configuration["JWT:ValidAudience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SecretKey")))
-            })
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-            {
-                var cookieSettings = builder.Configuration.GetSection("CookieSettings");
-                options.LoginPath = cookieSettings["LoginPath"];
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(double.Parse(cookieSettings["ExpireTimeSpan"]));
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SecretKey") ?? string.Empty))
             }); 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

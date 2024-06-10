@@ -43,17 +43,15 @@ namespace UserBLL.Service
 
         public UserEntity Login(LoginModel login)
         {
-            UserEntity userEntity = null;
             try
             {
-                userEntity = userRll.LoginUser(login);
+                return userRll.LoginUser(login);
             }
             catch(UserException ie)
             {
                 Console.WriteLine(ie.Message);
                 throw;
             }
-            return userEntity;
         }
     }
 }

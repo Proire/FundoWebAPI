@@ -24,8 +24,9 @@ namespace UserRLL.Entity
         public string UserName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Password is required.")]
-        [RegularExpression(@" [^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$", ErrorMessage = "Password Invalid")]
-        public string Password { get; set; } = string.Empty ;
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$", ErrorMessage = "Password Invalid")]
+        public string Password { get; set; } = string.Empty;
+
 
         [Required(ErrorMessage = "Phone number is required.")]
         [RegularExpression(@"^\d{10}$", ErrorMessage = "Invalid phone number format. It should be 10 digits.")]

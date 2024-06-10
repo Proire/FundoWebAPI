@@ -34,10 +34,9 @@ namespace FundooWebAPI.Controllers
         [Route("/register")]
         public ResponseModel Register([FromBody] UserModel user)
         {
-            UserModel model = null;
             try
             {
-                model = userBLL.AddUser(user);
+                UserModel model = userBLL.AddUser(user);
                 responeModel.message = "User Added SuccessFully, Go to Login";
                 responeModel.data = model.ToString();
             }
@@ -53,10 +52,9 @@ namespace FundooWebAPI.Controllers
         [Route("/login")]
         public ResponseModel Login([FromBody] LoginModel model)
         {
-            UserEntity user = null;
             try
             {
-                user = userBLL.Login(model);
+                UserEntity user = userBLL.Login(model);
                 responeModel.message = "Loggedin Successfully!";
                 responeModel.data = GenerateToken(user);
             }
@@ -99,14 +97,20 @@ namespace FundooWebAPI.Controllers
 
                 return new UserModel()
                 {
-                    UserName = userClaims.FirstOrDefault(o => o.Type==ClaimTypes.NameIdentifier)?.Value,
-                    Name = userClaims.FirstOrDefault(o => o.Type==ClaimTypes.GivenName)?.Value,
-                    PhoneNumber = userClaims.FirstOrDefault(o => o.Type==ClaimTypes.MobilePhone)?.Value,
-                    Role = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Role)?.Value,
+                    UserName = userClaims.FirstOrDefault(o => o.Type==ClaimTypes.NameIdentifier)?.Value ?? string.Empty,
+                    Name = userClaims.FirstOrDefault(o => o.Type==ClaimTypes.GivenName)?.Value ?? string.Empty,
+                    PhoneNumber = userClaims.FirstOrDefault(o => o.Type==ClaimTypes.MobilePhone)?.Value ?? string.Empty,
+                    Role = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Role)?.Value ?? string.Empty,
                 };
 
             }
-            return null;
+            return new UserModel()
+            {
+                UserName = string.Empty,
+                Name = string.Empty,
+                PhoneNumber = string.Empty,
+                Role = string.Empty
+            };
 
         }
 
@@ -119,10 +123,10 @@ namespace FundooWebAPI.Controllers
                 .Build();
 
             // Retrieve issuer and audience from appsettings.json
-            string issuer = configuration["JWT:ValidIssuer"];
-            string audience = configuration["JWT:ValidAudience"];
+            string issuer = configuration["JWT:ValidIssuer"] ?? string.Empty;
+            string audience = configuration["JWT:ValidAudience"] ?? string.Empty;
            
-            var security = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SecretKey")));
+            var security = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SecretKey")  ?? string.Empty));
             var credentials = new SigningCredentials(security,SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
