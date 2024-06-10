@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +36,7 @@ namespace FundooWebAPI.Controllers
             try
             {
                 model = userBLL.AddUser(user);
-                responeModel.message = "User Added SuccessFully";
+                responeModel.message = "User Added SuccessFully, Go to Login";
                 responeModel.data = model.ToString();
             }
             catch (UserException ex)
@@ -69,8 +70,8 @@ namespace FundooWebAPI.Controllers
 
         [Authorize]   // Unauthorized users cannot access this
         [HttpGet]
-        [Route("/getUsers")]
-        public ResponseModel GetUsers()
+        [Route("/getUser")]
+        public ResponseModel GetUser()
         {
             var user = GetCurrentUser();
             responeModel.message = $"Accessed Private info";
@@ -97,7 +98,7 @@ namespace FundooWebAPI.Controllers
 
         }
 
-        private string GenerateToken(UserEntity user)
+        private static string GenerateToken(UserEntity user)
         {
             // Build configuration
             var configuration = new ConfigurationBuilder()
@@ -108,7 +109,7 @@ namespace FundooWebAPI.Controllers
             // Retrieve issuer and audience from appsettings.json
             string issuer = configuration["JWT:ValidIssuer"];
             string audience = configuration["JWT:ValidAudience"];
-
+           
             var security = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SecretKey")));
             var credentials = new SigningCredentials(security,SecurityAlgorithms.HmacSha256);
             var claims = new[]
