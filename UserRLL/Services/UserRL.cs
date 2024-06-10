@@ -22,7 +22,7 @@ namespace UserRLL.Services
         public UserModel AddUser(UserModel user)
         {
             user.Password = PasswordHasher.HashPassword(user.Password);
-            UserEntity userEntity = new UserEntity() { Name=user.Name,UserName = user.UserName, Password=user.Password,PhoneNumber=user.PhoneNumber};
+            UserEntity userEntity = new UserEntity() { Name=user.Name,UserName = user.UserName, Password=user.Password,PhoneNumber=user.PhoneNumber,Role=user.Role};
             try
             {
                 Context.Users.Add(userEntity);

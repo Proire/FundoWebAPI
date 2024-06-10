@@ -11,8 +11,8 @@ using UserRLL.Context;
 namespace UserRLL.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    [Migration("20240606044239_UserMigration")]
-    partial class UserMigration
+    [Migration("20240610083012_CreateUsers")]
+    partial class CreateUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,6 +43,10 @@ namespace UserRLL.Migrations
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
                         .IsRequired()

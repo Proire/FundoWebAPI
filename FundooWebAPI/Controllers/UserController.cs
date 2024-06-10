@@ -1,4 +1,6 @@
 using Azure.Identity;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -45,8 +47,6 @@ namespace FundooWebAPI.Controllers
                 responeModel.message = ex.Message;
             }
             return responeModel;
-
-
         }
 
         [HttpPost]
@@ -74,8 +74,19 @@ namespace FundooWebAPI.Controllers
         public ResponseModel GetUser()
         {
             var user = GetCurrentUser();
-            responeModel.message = $"Accessed Private info";
+            responeModel.message = $"Accessed User info";
             responeModel.data= user.ToString();
+            return responeModel;
+        }
+
+        [Authorize(Roles ="Admin")]   // Unauthorized users cannot access this
+        [HttpGet]
+        [Route("/getadmin")]
+        public ResponseModel Get()
+        {
+            var user = GetCurrentUser();
+            responeModel.message = $"Accessed Admin info";
+            responeModel.data = user.ToString();
             return responeModel;
         }
 
@@ -90,7 +101,8 @@ namespace FundooWebAPI.Controllers
                 {
                     UserName = userClaims.FirstOrDefault(o => o.Type==ClaimTypes.NameIdentifier)?.Value,
                     Name = userClaims.FirstOrDefault(o => o.Type==ClaimTypes.GivenName)?.Value,
-                    PhoneNumber = userClaims.FirstOrDefault(o => o.Type==ClaimTypes.MobilePhone)?.Value
+                    PhoneNumber = userClaims.FirstOrDefault(o => o.Type==ClaimTypes.MobilePhone)?.Value,
+                    Role = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.Role)?.Value,
                 };
 
             }
@@ -116,7 +128,8 @@ namespace FundooWebAPI.Controllers
             {
                 new Claim(ClaimTypes.NameIdentifier,user.UserName),
                 new Claim(ClaimTypes.GivenName,user.Name),
-                new Claim(ClaimTypes.MobilePhone,user.PhoneNumber)
+                new Claim(ClaimTypes.MobilePhone,user.PhoneNumber),
+                new Claim(ClaimTypes.Role,user.Role),
             };
             var token = new JwtSecurityToken(issuer, audience,claims,expires:DateTime.Now.AddMinutes(15),signingCredentials:credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);

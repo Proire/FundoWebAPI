@@ -17,20 +17,23 @@ namespace UserRLL.Entity
 
         [Required(ErrorMessage = "Name is required.")]
         [RegularExpression(@"^[A-Za-z\s]+$", ErrorMessage = "Name must contain only letters and spaces.")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Username is required.")]
         [StringLength(50)] // Maximum length for the username
-        public string UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Password is required.")]
-        [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
-        public string Password { get; set; }
+        [RegularExpression(@" [^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$", ErrorMessage = "Password Invalid")]
+        public string Password { get; set; } = string.Empty ;
 
         [Required(ErrorMessage = "Phone number is required.")]
         [RegularExpression(@"^\d{10}$", ErrorMessage = "Invalid phone number format. It should be 10 digits.")]
-        public string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Sports is required")]
+        [RegularExpression("^(Admin|User|Guest)$", ErrorMessage = "Role must be one of: Admin, User, Guest")]
+        public string Role { get; set; } = string.Empty;
         public override string ToString()
         {
             return $"{Id}, {Name}, {UserName}, {Password}, {PhoneNumber}";
