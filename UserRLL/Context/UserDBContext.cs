@@ -17,6 +17,8 @@ namespace UserRLL.Context
 
         public DbSet<UserEntity> Users { get; set; }
 
+        public DbSet<NoteEntity> Notes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -28,6 +30,13 @@ namespace UserRLL.Context
             modelBuilder.Entity<UserEntity>()
                 .HasIndex(u => u.PhoneNumber)
                 .IsUnique();
+
+            modelBuilder.Entity<NoteEntity>()
+            .HasOne(n => n.UserEntity) // NoteEntity has one UserEntity
+        .       WithMany(u => u.Notes) // UserEntity can have many NoteEntity instances
+            .HasForeignKey(n => n.UserEntityId); // Foreign key property in NoteEntity
+
+
         }
     }
 }

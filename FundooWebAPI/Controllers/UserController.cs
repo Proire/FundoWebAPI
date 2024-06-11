@@ -20,49 +20,45 @@ namespace FundooWebAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserBL userBLL;
-        private readonly ResponseModel responeModel;
         public UserController(IUserBL userBLL, IConfiguration configuration) 
         {
             this.userBLL = userBLL;
-            responeModel = new ResponseModel(); 
         }
 
 
         [HttpPost]
         [Route("/register")]
-        public ResponseModel Register([FromBody] UserModel user)
+        public ResponseModel<UserModel> Register([FromBody] UserModel user)
         {
             try
             {
                 UserModel model = userBLL.AddUser(user);
-                responeModel.message = "User Added SuccessFully, Go to Login";
-                responeModel.data = model.ToString();
+                ResponseModel<UserModel> responseModel = new ResponseModel<UserModel>() { Data = model , Message = "User Added SuccessFully, Go to Login" };
+                return responseModel;
             }
             catch (UserException ex)
             {
-                responeModel.status = false;
-                responeModel.message = ex.Message;
+                ResponseModel<UserModel> responseModel = new ResponseModel<UserModel>() { Data = null, Message = ex.Message, Status = false };
+                return responseModel;
             }
-            return responeModel;
         }
 
 
         [HttpPost]
         [Route("/login")]
-        public ResponseModel Login([FromBody] LoginModel model)
+        public ResponseModel<string> Login([FromBody] LoginModel model)
         {
             try
             {
                 UserEntity user = userBLL.Login(model);
-                responeModel.message = "Loggedin Successfully!";
-                responeModel.data = GenerateToken(user);
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = "Loggedin Successfully!", Data = GenerateToken(user) };
+                return responseModel;
             }
             catch (UserException ex)
             {
-                responeModel.status=false;
-                responeModel.message = ex.Message;
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = ex.Message, Data = string.Empty, Status = false};
+                return responseModel;
             }
-            return responeModel;
         }
 
         private UserModel GetCurrentUser()

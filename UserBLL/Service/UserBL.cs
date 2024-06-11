@@ -36,7 +36,7 @@ namespace UserBLL.Service
             return userModel;
         }
 
-        public IEnumerable<UserEntity> GetUsers()
+        public ICollection<UserEntity> GetUsers()
         {
             return userRll.GetUsers();
         }

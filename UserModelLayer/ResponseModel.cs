@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace UserModelLayer
 {
-    public class ResponseModel
+    public class ResponseModel<T>
     {
-        public bool status { get; set; } = true;
-        public string message { get; set; } = string.Empty;
-        public string data { get; set; } = string.Empty ;
+        public bool Status { get; set; } = true;
+        public string Message { get; set; } = string.Empty;
+        public required T Data { get; set; } 
     }
 }

@@ -20,10 +20,19 @@ namespace FundooWebAPI
 
             // Add services to the container.
 
+            // Add Controllers 
             builder.Services.AddControllers();
+            
+            // Add DbContext
             builder.Services.AddDbContextPool<UserDBContext>(option => option.UseSqlServer(Environment.GetEnvironmentVariable("UserDbConnection")));
+
+            // Add Services
             builder.Services.AddTransient<IUserBL,UserBL>();
             builder.Services.AddTransient<IUserRL,UserRL>();
+
+            builder.Services.AddTransient<INoteBL, NoteBL>();
+            builder.Services.AddTransient<INoteRL ,NoteRL>();
+
             // Getting Configuration object which now represents appsettings.json inside our program
             var configuration = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json").Build();
             // JWT Authentication service 

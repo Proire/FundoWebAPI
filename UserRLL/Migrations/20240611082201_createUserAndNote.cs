@@ -5,7 +5,7 @@
 namespace UserRLL.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateUsers : Migration
+    public partial class createUserAndNote : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,6 +27,34 @@ namespace UserRLL.Migrations
                     table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Notes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    IsTrash = table.Column<bool>(type: "bit", nullable: false),
+                    IsArchive = table.Column<bool>(type: "bit", nullable: false),
+                    UserEntityId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notes_Users_UserEntityId",
+                        column: x => x.UserEntityId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notes_UserEntityId",
+                table: "Notes",
+                column: "UserEntityId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Users_PhoneNumber",
                 table: "Users",
@@ -43,6 +71,9 @@ namespace UserRLL.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Notes");
+
             migrationBuilder.DropTable(
                 name: "Users");
         }

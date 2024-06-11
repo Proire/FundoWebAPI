@@ -40,5 +40,6 @@ namespace UserRLL.Entity
             return $"{Id}, {Name}, {UserName}, {Password}, {PhoneNumber}";
         }
 
+        public IList<NoteEntity>? Notes { get; set; }
     }
 }

@@ -36,7 +36,7 @@ namespace UserRLL.Services
             return user;
         }
 
-        public IEnumerable<UserEntity> GetUsers()
+        public ICollection<UserEntity> GetUsers()
         {
             return Context.Users.ToList();
         }
