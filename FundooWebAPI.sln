@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FundooWebAPI", "FundooWebAPI\FundooWebAPI.csproj", "{6EC5DAC1-E390-4FEA-AB40-D3A6A2174DD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FundoWebAPI", "FundooWebAPI\FundoWebAPI.csproj", "{6EC5DAC1-E390-4FEA-AB40-D3A6A2174DD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserBLL", "UserBLL\UserBLL.csproj", "{2C3035B7-AE60-4820-BE9F-27F0EECFAC3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserBLL", "UserBLL\UserBLL.csproj", "{2C3035B7-AE60-4820-BE9F-27F0EECFAC3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserRLL", "UserRLL\UserRLL.csproj", "{84B593D9-103D-45A9-887E-3B238B6B91C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserRLL", "UserRLL\UserRLL.csproj", "{84B593D9-103D-45A9-887E-3B238B6B91C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserModelLayer", "UserModelLayer\UserModelLayer.csproj", "{02F58D9E-D296-48EA-9B41-528B3BF6A3FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserModelLayer", "UserModelLayer\UserModelLayer.csproj", "{02F58D9E-D296-48EA-9B41-528B3BF6A3FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

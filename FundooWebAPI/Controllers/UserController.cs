@@ -21,12 +21,10 @@ namespace FundooWebAPI.Controllers
     {
         private readonly IUserBL userBLL;
         private readonly ResponseModel responeModel;
-        private readonly IConfiguration configuration;
         public UserController(IUserBL userBLL, IConfiguration configuration) 
         {
             this.userBLL = userBLL;
             responeModel = new ResponseModel(); 
-            this.configuration = configuration;
         }
 
 
@@ -48,6 +46,7 @@ namespace FundooWebAPI.Controllers
             return responeModel;
         }
 
+
         [HttpPost]
         [Route("/login")]
         public ResponseModel Login([FromBody] LoginModel model)
@@ -63,28 +62,6 @@ namespace FundooWebAPI.Controllers
                 responeModel.status=false;
                 responeModel.message = ex.Message;
             }
-            return responeModel;
-        }
-
-        [Authorize]   // Unauthorized users cannot access this
-        [HttpGet]
-        [Route("/getUser")]
-        public ResponseModel GetUser()
-        {
-            var user = GetCurrentUser();
-            responeModel.message = $"Accessed User info";
-            responeModel.data= user.ToString();
-            return responeModel;
-        }
-
-        [Authorize(Roles ="Admin")]   // Unauthorized users cannot access this
-        [HttpGet]
-        [Route("/getadmin")]
-        public ResponseModel Get()
-        {
-            var user = GetCurrentUser();
-            responeModel.message = $"Accessed Admin info";
-            responeModel.data = user.ToString();
             return responeModel;
         }
 
