@@ -23,9 +23,9 @@ namespace UserRLL.Services
             _dbContext = dbContext; 
         }
 
-        public NoteEntity CreateNote(NoteModel note)
+        public NoteEntity CreateNote(NoteModel note,int UserId)
         {
-            NoteEntity noteEntity = new NoteEntity() { Title=note.Title,Description=note.Description };
+            NoteEntity noteEntity = new() { Title=note.Title,Description=note.Description ,UserEntityId=UserId};
             try
             {
                 _dbContext.Notes.Add(noteEntity);
@@ -38,11 +38,11 @@ namespace UserRLL.Services
             }
         }
 
-        public NoteEntity DeleteNote(int id)
+        public NoteEntity DeleteNote(int id, int userId)
         {
             try
             {
-                var note  = _dbContext.Notes.FirstOrDefault(p => p.Id == id);
+                var note  = _dbContext.Notes.FirstOrDefault(p => p.Id == id && p.UserEntityId == userId);
                 if (note != null)
                 {
                     _dbContext.Notes.Remove(note);
@@ -58,11 +58,11 @@ namespace UserRLL.Services
             }
         }
 
-        public NoteEntity GetNoteById(int id)
+        public NoteEntity GetNoteById(int id, int UserId)
         {
             try
             {
-                var note = _dbContext.Notes.FirstOrDefault(p => p.Id == id);
+                var note = _dbContext.Notes.FirstOrDefault(p => p.Id == id && p.UserEntityId==UserId);
                 if (note != null)
                     return note;
                 throw new NoteException($"No Note Found with id : {id}");
@@ -74,27 +74,27 @@ namespace UserRLL.Services
             }
         }
 
-        public IList<NoteEntity> GetNotes()
+        public IList<NoteEntity> GetNotes(int UserId)
         {
             try
             {
-                var notes = _dbContext.Notes.ToList();
+                var notes = _dbContext.Notes.Where(p => p.UserEntityId == UserId).ToList();
                 if(notes != null)
                     return notes;
                 throw new NoteException($"Empty Notes");
             }
-            catch (Exception ex)
+            catch (Exception )
             {
-                Console.WriteLine($"An error occurred while retrieving all Notes: {ex.Message}");
+                Console.WriteLine($"An error occurred while retrieving all Notes");
                 throw;
             }
         }
 
-        public NoteEntity UpdateNote(int id, NoteModel note)
+        public NoteEntity UpdateNote(int id, NoteModel note, int UserId)
         {
             try
             {
-                var existingNote = _dbContext.Notes.FirstOrDefault(p => p.Id == id);
+                var existingNote = _dbContext.Notes.FirstOrDefault(p => p.Id == id && p.UserEntityId == UserId);
                 if (existingNote != null)
                 {
                     existingNote.Title = note.Title;
@@ -105,7 +105,7 @@ namespace UserRLL.Services
                 }
                 throw new NoteException($"No Note Found with id : {id}");
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 Console.WriteLine($"An error occurred while updating Note with ID : {id}");
                 throw;

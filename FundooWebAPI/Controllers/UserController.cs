@@ -103,8 +103,8 @@ namespace FundooWebAPI.Controllers
             var credentials = new SigningCredentials(security,SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier,user.UserName),
-                new Claim(ClaimTypes.GivenName,user.Name),
+                new Claim(ClaimTypes.NameIdentifier,Convert.ToString(user.Id)),
+                new Claim(ClaimTypes.GivenName,user.UserName),
                 new Claim(ClaimTypes.MobilePhone,user.PhoneNumber),
                 new Claim(ClaimTypes.Role,user.Role),
             };

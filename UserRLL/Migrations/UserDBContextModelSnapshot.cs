@@ -35,13 +35,13 @@ namespace UserRLL.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<bool>("IsArchive")
+                    b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsTrash")
+                    b.Property<bool>("IsTrashed")
                         .HasColumnType("bit");
 
                     b.Property<string>("Title")

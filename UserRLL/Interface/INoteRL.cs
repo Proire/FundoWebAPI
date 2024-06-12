@@ -10,14 +10,14 @@ namespace UserRLL.Interface
 {
     public interface INoteRL
     {
-        IList<NoteEntity> GetNotes();
+        IList<NoteEntity> GetNotes(int UserId);
 
-        NoteEntity GetNoteById(int id);
+        NoteEntity GetNoteById(int id, int UserId);
 
-        NoteEntity CreateNote(NoteModel note);
+        NoteEntity CreateNote(NoteModel note,int UserId);
 
-        NoteEntity UpdateNote(int id, NoteModel note);
+        NoteEntity UpdateNote(int id, NoteModel note,int UserId);
 
-        NoteEntity DeleteNote(int id);
+        NoteEntity DeleteNote(int id, int UserId);
     }
 }

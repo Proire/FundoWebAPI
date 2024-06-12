@@ -27,11 +27,10 @@ namespace UserRLL.Entity
 
         public bool IsDeleted { get; set; } = false;
 
-        public bool IsTrash { get; set; } = false;
+        public bool IsTrashed { get; set; } = false;
 
-        public bool IsArchive { get; set; } = false;
+        public bool IsArchived { get; set; } = false;
 
-        [NotMapped]
         [ForeignKey("UserEntity")]
         public int? UserEntityId { get; set; }
 
@@ -40,7 +39,7 @@ namespace UserRLL.Entity
             return $"{Title} : {Description}";
         }
 
-        public UserEntity? UserEntity { get; set; }
+        public UserEntity UserEntity { get; set; }
 
     }
 }

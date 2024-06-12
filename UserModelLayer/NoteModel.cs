@@ -23,5 +23,7 @@ namespace UserModelLayer
         public bool IsTrash { get; set; } = false;
 
         public bool IsArchive { get; set; } = false;
+
+
     }
 }

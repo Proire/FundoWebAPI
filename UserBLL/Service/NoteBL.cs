@@ -7,6 +7,7 @@ using UserBLL.Interface;
 using UserModelLayer;
 using UserRLL.Entity;
 using UserRLL.Interface;
+using UserRLL.Services;
 
 namespace UserBLL.Service
 {
@@ -16,29 +17,29 @@ namespace UserBLL.Service
         public NoteBL(INoteRL note) { 
             this._note = note;
         }
-        public NoteEntity CreateNote(NoteModel node)
+        public NoteEntity CreateNote(NoteModel node,int UserId)
         {
-            return _note.CreateNote(node);
+            return _note.CreateNote(node,UserId);
         }
 
-        public NoteEntity DeleteNote(int id)
+        public NoteEntity DeleteNote(int id, int UserId)
         {
-            return _note.DeleteNote(id);
+            return _note.DeleteNote(id,UserId);
         }
 
-        public NoteEntity GetNote(int id)
+        public NoteEntity GetNote(int id,int UserId)
         {
-            return _note.GetNoteById(id);
+            return _note.GetNoteById(id, UserId);
         }
 
-        public IList<NoteEntity> GetNotes()
+        public IList<NoteEntity> GetNotes(int UserId)
         {
-            return _note.GetNotes();
+            return _note.GetNotes(UserId);
         }
 
-        public NoteEntity UpdateNote(int id, NoteModel note)
+        public NoteEntity UpdateNote(int id, NoteModel note, int UserId)
         {
-            return _note.UpdateNote(id, note);
+            return _note.UpdateNote(id, note, UserId);
         }
     }
 }

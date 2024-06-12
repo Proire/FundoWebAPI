@@ -25,7 +25,7 @@ namespace FundooWebAPI
             
             // Add DbContext
             builder.Services.AddDbContextPool<UserDBContext>(option => option.UseSqlServer(Environment.GetEnvironmentVariable("UserDbConnection")));
-
+         
             // Add Services
             builder.Services.AddTransient<IUserBL,UserBL>();
             builder.Services.AddTransient<IUserRL,UserRL>();

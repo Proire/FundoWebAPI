@@ -5,7 +5,7 @@
 namespace UserRLL.Migrations
 {
     /// <inheritdoc />
-    public partial class createUserAndNote : Migration
+    public partial class createUserAndNotes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,8 +36,8 @@ namespace UserRLL.Migrations
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    IsTrash = table.Column<bool>(type: "bit", nullable: false),
-                    IsArchive = table.Column<bool>(type: "bit", nullable: false),
+                    IsTrashed = table.Column<bool>(type: "bit", nullable: false),
+                    IsArchived = table.Column<bool>(type: "bit", nullable: false),
                     UserEntityId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>

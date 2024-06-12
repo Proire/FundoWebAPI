@@ -10,14 +10,14 @@ namespace UserBLL.Interface
 {
     public interface INoteBL
     {
-        IList<NoteEntity> GetNotes();
+        IList<NoteEntity> GetNotes(int userId);
 
-        NoteEntity GetNote(int id);
+        NoteEntity GetNote(int id,int UserId);
 
-        NoteEntity CreateNote(NoteModel note);
+        NoteEntity CreateNote(NoteModel note,int userId);
 
-        NoteEntity UpdateNote(int id, NoteModel note);
+        NoteEntity UpdateNote(int id, NoteModel note,int UserId);
 
-        NoteEntity DeleteNote(int id);
+        NoteEntity DeleteNote(int id,int UserId);
     }
 }

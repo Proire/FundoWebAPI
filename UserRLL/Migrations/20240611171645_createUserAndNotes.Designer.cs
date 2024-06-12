@@ -12,8 +12,8 @@ using UserRLL.Context;
 namespace UserRLL.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    [Migration("20240611082201_createUserAndNote")]
-    partial class createUserAndNote
+    [Migration("20240611171645_createUserAndNotes")]
+    partial class createUserAndNotes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,13 +38,13 @@ namespace UserRLL.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<bool>("IsArchive")
+                    b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsTrash")
+                    b.Property<bool>("IsTrashed")
                         .HasColumnType("bit");
 
                     b.Property<string>("Title")

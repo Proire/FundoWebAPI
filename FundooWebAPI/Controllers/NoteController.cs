@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Numerics;
+using System.Security.Claims;
 using System.Xml.Linq;
 using UserBLL.Interface;
 using UserModelLayer;
@@ -24,9 +25,10 @@ namespace FundoWebAPI.Controllers
         [HttpPost]
         public ResponseModel<NoteEntity> AddNote([FromBody] NoteModel model)
         {
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             try
             {
-                var addedNote = noteBL.CreateNote(model);
+                var addedNote = noteBL.CreateNote(model,UserId);
                 return new ResponseModel<NoteEntity> { Message="Note Added", Data = addedNote };
             }
             catch (Exception ex)
@@ -39,15 +41,16 @@ namespace FundoWebAPI.Controllers
         [HttpGet("{id}")]
         public ResponseModel<NoteEntity> GetNoteById(int id)
         {
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             try
             {
-                var node = noteBL.GetNote(id);
+                var node = noteBL.GetNote(id,UserId);
                 return new ResponseModel<NoteEntity>() { Message = "Note Retrieved", Data = node };
 
             }
             catch (Exception ex)
             {
-                return new ResponseModel<NoteEntity>() { Status = false, Message = ex.Message, Data= null };
+                return new ResponseModel<NoteEntity>() { Status = false, Message = ex.Message, Data = null };
             }
         }
 
@@ -56,9 +59,10 @@ namespace FundoWebAPI.Controllers
         [HttpGet]
         public ResponseModel<IList<NoteEntity>> GetNotes()
         {
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             try
             {
-                IList<NoteEntity> Notes = noteBL.GetNotes();
+                IList<NoteEntity> Notes = noteBL.GetNotes(UserId);
                 return new ResponseModel<IList<NoteEntity>>() { Data = Notes, Message = "Notes Retrived" };
             }
             catch (Exception ex)
@@ -71,9 +75,10 @@ namespace FundoWebAPI.Controllers
         [HttpDelete("{id}")]
         public ResponseModel<NoteEntity> DeleteNote(int id)
         {
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             try
             {
-                var deletedNote = noteBL.DeleteNote(id);
+                var deletedNote = noteBL.DeleteNote(id,UserId);
                 return new ResponseModel<NoteEntity>() { Message = "Note Deleted", Data = deletedNote };
             }
             catch (Exception ex)
@@ -86,9 +91,10 @@ namespace FundoWebAPI.Controllers
         [HttpPut("{id}")]
         public ResponseModel<NoteEntity> UpdateNote(int id, [FromBody] NoteModel node)
         {
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             try
             {
-                var updatedNote = noteBL.UpdateNote(id, node);
+                var updatedNote = noteBL.UpdateNote(id, node,UserId);
                 return new ResponseModel<NoteEntity>() { Message = "Note Updated", Data = updatedNote };
             }
             catch (Exception ex)
