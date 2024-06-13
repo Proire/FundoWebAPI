@@ -16,9 +16,7 @@ namespace UserModelLayer
 
         public string Email { get; set; } = string.Empty;
 
-        public override string ToString()
-        {
-            return $"{Name}, {UserName}, {Password}, {PhoneNumber}";
-        }
+        public bool IsEmailVerified { get; set; } = false;
+
     }
 }

@@ -10,11 +10,15 @@ namespace UserBLL.Interface
 {
     public interface IUserBL
     {
-        UserModel AddUser(UserModel model);
+        UserEntity AddUser(UserModel model);
         UserEntity Login(LoginModel login);
         ICollection<UserEntity> GetUsers();
         UserEntity GetUserById(int id);
 
+        UserEntity GetUserByEmail(EmailModel email);
+
         void ResetPassword(int userId, ResetPasswordDTO resetPasswordDTO);
+
+        void VerifyEmail(int userId);
     }
 }

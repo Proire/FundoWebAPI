@@ -32,17 +32,18 @@ namespace FundooWebAPI.Controllers
 
         [HttpPost]
         [Route("/register")]
-        public ResponseModel<UserModel> Register([FromBody] UserModel user)
+        public ResponseModel<string> Register([FromBody] UserModel user)
         {
             try
             {
-                UserModel model = userBLL.AddUser(user);
-                ResponseModel<UserModel> responseModel = new ResponseModel<UserModel>() { Data = model, Message = "User Added SuccessFully, Go to Login" };
+                UserEntity model = userBLL.AddUser(user);
+                var token = GenerateToken(model);
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Data = token, Message = "User Added SuccessFully, Go to Login" };
                 return responseModel;
             }
             catch (UserException ex)
             {
-                ResponseModel<UserModel> responseModel = new ResponseModel<UserModel>() { Data = null, Message = ex.Message, Status = false };
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Data = null, Message = ex.Message, Status = false };
                 return responseModel;
             }
         }
@@ -65,15 +66,13 @@ namespace FundooWebAPI.Controllers
             }
         }
 
-        [Authorize]
-        [HttpGet]
+        [HttpPost]
         [Route("/forgetPassword")]
-        public ResponseModel<string> ForgotPassword()
+        public ResponseModel<string> ForgotPassword([FromBody] EmailModel email)
         {
-            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value); // userId from token 
             try
             {
-                UserEntity user = userBLL.GetUserById(UserId); // fetched user using userId
+                UserEntity user = userBLL.GetUserByEmail(email); // fetched user using userId
                 var token = GenerateToken(user);
                 
                 var resetPasswordUrl = $"http://localhost:5288/swagger/index.html?token={token}";
@@ -94,11 +93,61 @@ namespace FundooWebAPI.Controllers
         public ResponseModel<string> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
         {
             int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            string token = HttpContext.Request.Headers["Authorization"];
             try
             {
                 userBLL.ResetPassword(UserId,resetPasswordDTO);
                 ResponseModel<string> responseModel = new ResponseModel<string>() { Message = "Password Updated", Data = string.Empty };
+                return responseModel;
+            }
+            catch (UserException ex)
+            {
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = ex.Message, Data = string.Empty, Status = false };
+                return responseModel;
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("/sendVerificationEmail")]
+        public ResponseModel<string> SendVerificationEmail([FromBody] string Email)
+        {
+            
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);        
+            try
+            {
+                UserEntity user = userBLL.GetUserById(UserId); // fetched user using userId
+                var GeneratedToken = GenerateToken(user);
+                var verificationUrl = Url.Action(nameof(VerifyEmail), "User", new { GeneratedToken }, Request.Scheme);
+
+                var emailContent = $@"
+                                <html>
+                                <body>
+                                       <p>Please verify your email by clicking the link below:</p>
+                                       <a href='{verificationUrl}'>Verify Email</a>
+                                </body>
+                                </html>";
+                _emailSender.SendEmail(new EmailDTO() { To = user.Email, Subject = "Verify Email", Body = emailContent});
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = "Mail Sent", Data = GeneratedToken };
+                return responseModel;
+            }
+            catch (UserException ex)
+            {
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = ex.Message, Data = string.Empty, Status = false };
+                return responseModel;
+            }
+        }
+
+
+        [Authorize]
+        [HttpGet]
+        [Route("/verifyEmail")]
+        public ResponseModel<string> VerifyEmail()
+        {
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            try
+            {
+                userBLL.VerifyEmail(UserId);
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = "Email Verified SuccessFully", Data = string.Empty };
                 return responseModel;
             }
             catch (UserException ex)

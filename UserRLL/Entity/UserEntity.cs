@@ -41,6 +41,8 @@ namespace UserRLL.Entity
         [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid Email Format.")]
         public string Email { get; set; } = string.Empty;
 
+        public bool IsEmailVerified { get; set; }  = false;
+
         public override string ToString()
         {
             return $"{Id}, {Name}, {UserName}, {Password}, {PhoneNumber}";

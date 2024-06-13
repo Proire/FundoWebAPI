@@ -21,19 +21,17 @@ namespace UserBLL.Service
             this.userRll = userRll;
         }
 
-        public UserModel AddUser(UserModel model)
+        public UserEntity AddUser(UserModel model)
         {
-            UserModel userModel;
             try
             {
-                userModel = userRll.AddUser(model);
+                return userRll.AddUser(model);
             }
             catch(Exception ie)
             {
                 Console.WriteLine(ie.Message);
                 throw;
             }
-            return userModel;
         }
 
         public UserEntity GetUserById(int id)
@@ -42,6 +40,20 @@ namespace UserBLL.Service
             try
             {
                 return userRll.GetUserById(id);
+            }
+            catch (UserException ie)
+            {
+                Console.WriteLine(ie.Message);
+                throw;
+            }
+        }
+
+        public UserEntity GetUserByEmail(EmailModel email)
+        {
+
+            try
+            {
+                return userRll.GetUserByEmail(email);
             }
             catch (UserException ie)
             {
@@ -73,6 +85,19 @@ namespace UserBLL.Service
             try
             {
                 userRll.ResetPassword(userId, resetPasswordDTO);
+            }
+            catch (UserException ie)
+            {
+                Console.WriteLine(ie.Message);
+                throw;
+            }
+        }
+
+        public void VerifyEmail(int userId)
+        {
+            try
+            {
+                userRll.VerifiedEmail(userId);
             }
             catch (UserException ie)
             {

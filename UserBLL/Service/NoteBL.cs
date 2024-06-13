@@ -12,46 +12,93 @@ using UserRLL.Services;
 
 namespace UserBLL.Service
 {
-    public class NoteBL : INoteBL
+    public class NoteBL(INoteRL note) : INoteBL
     {
-        private readonly INoteRL _note;
-        public NoteBL(INoteRL note) { 
-            this._note = note;
-        }
+        private readonly INoteRL _note = note;
+
         public NoteEntity CreateNote(NoteModel node,int UserId)
         {
-            return _note.CreateNote(node,UserId);
+            try
+            {
+                return _note.CreateNote(node, UserId);
+            }
+            catch(Exception)
+            {
+                throw;
+            }
         }
 
         public NoteEntity DeleteNote(int id, int UserId)
-        {
-            return _note.DeleteNote(id,UserId);
+        {   
+            try
+            {
+                return _note.DeleteNote(id, UserId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public NoteEntity GetNote(int id,int UserId)
         {
-            return _note.GetNoteById(id, UserId);
+            try
+            {
+                return _note.GetNoteById(id, UserId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public IList<NoteEntity> GetNotes(int UserId)
         {
-            return _note.GetNotes(UserId);
+            
+            try
+            {
+                return _note.GetNotes(UserId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public NoteEntity UpdateNote(int id, NoteModel note, int UserId)
         {
-            return _note.UpdateNote(id, note, UserId);
+            try
+            {
+                return _note.UpdateNote(id, note, UserId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public NoteEntity ArchiveNote(int id, int Userid)
         {
-           
-            return _note.ArchiveNote(id, Userid);
+            try
+            {
+                return _note.ArchiveNote(id, Userid);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public NoteEntity TrashNote(int id, int userId)
         {
-            return _note.TrashNote(id, userId);
+            try
+            {
+                return _note.TrashNote(id, userId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

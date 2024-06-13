@@ -32,9 +32,10 @@ namespace UserRLL.Services
                 _dbContext.SaveChanges();
                 return noteEntity;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new NoteException($"An error occurred while adding a Note ");
+                Console.WriteLine(ex.Message);
+                throw;
             }
         }
 

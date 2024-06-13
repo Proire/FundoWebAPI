@@ -17,13 +17,5 @@ namespace UserModelLayer
         [Required(ErrorMessage = "Description is required.")]
         [StringLength(500, ErrorMessage = "Description length can't be more than 500 characters.")]
         public string Description { get; set; } = string.Empty;
-
-        public bool IsDeleted { get; set; } = false;
-
-        public bool IsTrash { get; set; } = false;
-
-        public bool IsArchive { get; set; } = false;
-
-
     }
 }
