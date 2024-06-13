@@ -69,8 +69,16 @@ namespace UserBLL.Service
         }
 
         public void ResetPassword(int userId, ResetPasswordDTO resetPasswordDTO)
-        {
-            userRll.ResetPassword(userId, resetPasswordDTO);
+        { 
+            try
+            {
+                userRll.ResetPassword(userId, resetPasswordDTO);
+            }
+            catch (UserException ie)
+            {
+                Console.WriteLine(ie.Message);
+                throw;
+            }
         }
     }
 }

@@ -111,5 +111,47 @@ namespace UserRLL.Services
                 throw;
             }
         }
+
+        public NoteEntity ArchiveNote(int id,int userId)
+        {
+            try
+            {
+                var existingNote = _dbContext.Notes.FirstOrDefault(p => p.Id == id && p.UserEntityId == userId);
+                if (existingNote != null && (existingNote.IsDeleted == false || existingNote.IsTrashed == false))
+                {
+                    existingNote.IsArchived = !existingNote.IsArchived;
+                    _dbContext.SaveChanges();
+                    return existingNote;
+                }
+                else
+                    throw new NoteException($"Note with {id} is not Avaliable");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        public NoteEntity TrashNote(int id,int userId)
+        {
+            try
+            {
+                var existingNote = _dbContext.Notes.FirstOrDefault(p => p.Id == id && p.UserEntityId == userId);
+                if (existingNote != null && existingNote.IsDeleted == false)
+                {
+                    existingNote.IsTrashed = !existingNote.IsTrashed;
+                    _dbContext.SaveChanges();
+                    return existingNote;
+                }
+                else
+                    throw new NoteException($"Note with {id} is not Available");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
     }
 }

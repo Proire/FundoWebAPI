@@ -102,5 +102,40 @@ namespace FundoWebAPI.Controllers
                 return new ResponseModel<NoteEntity>() { Status = false, Message = ex.Message, Data = null };
             }
         }
+
+
+        [Authorize]
+        [HttpGet("archive/{id}")]
+        public ResponseModel<NoteEntity> ArchiveNote(int id)
+        {
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            try
+            {
+                var Note = noteBL.ArchiveNote(id,UserId);
+                var status = (Note.IsArchived) ? "Archived" : "UnArchived";
+                return new ResponseModel<NoteEntity>() { Message = $"Note {status}", Data = Note};
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModel<NoteEntity>() { Status = false, Message = ex.Message, Data = null };
+            }
+        }
+
+        [Authorize]
+        [HttpGet("trash/{id}")]
+        public ResponseModel<NoteEntity> TrashNote(int id)
+        {
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            try
+            {
+                var Note = noteBL.TrashNote(id, UserId);
+                var status = (Note.IsTrashed) ? "Trashed" : "UnTrashed";
+                return new ResponseModel<NoteEntity>() { Message = $"Note {status}", Data = Note };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModel<NoteEntity>() { Status = false, Message = ex.Message, Data = null };
+            }
+        }
     }
 }

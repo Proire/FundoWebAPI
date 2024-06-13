@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UserBLL.Interface;
 using UserModelLayer;
 using UserRLL.Entity;
+using UserRLL.Exceptions;
 using UserRLL.Interface;
 using UserRLL.Services;
 
@@ -40,6 +41,17 @@ namespace UserBLL.Service
         public NoteEntity UpdateNote(int id, NoteModel note, int UserId)
         {
             return _note.UpdateNote(id, note, UserId);
+        }
+
+        public NoteEntity ArchiveNote(int id, int Userid)
+        {
+           
+            return _note.ArchiveNote(id, Userid);
+        }
+
+        public NoteEntity TrashNote(int id, int userId)
+        {
+            return _note.TrashNote(id, userId);
         }
     }
 }

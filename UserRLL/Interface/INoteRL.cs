@@ -19,5 +19,9 @@ namespace UserRLL.Interface
         NoteEntity UpdateNote(int id, NoteModel note,int UserId);
 
         NoteEntity DeleteNote(int id, int UserId);
+
+        NoteEntity ArchiveNote(int id, int userId);
+
+        NoteEntity TrashNote(int id, int userId);
     }
 }
