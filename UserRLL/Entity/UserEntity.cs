@@ -35,6 +35,12 @@ namespace UserRLL.Entity
         [Required(ErrorMessage = "Sports is required")]
         [RegularExpression("^(Admin|User|Guest)$", ErrorMessage = "Role must be one of: Admin, User, Guest")]
         public string Role { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address.")]
+        [RegularExpression(@"^[^@\s]+@[^@\s]+\.[^@\s]+$", ErrorMessage = "Invalid Email Format.")]
+        public string Email { get; set; } = string.Empty;
+
         public override string ToString()
         {
             return $"{Id}, {Name}, {UserName}, {Password}, {PhoneNumber}";

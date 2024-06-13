@@ -14,5 +14,9 @@ namespace UserRLL.Interface
         UserEntity LoginUser(LoginModel login);
 
         ICollection<UserEntity> GetUsers();
+
+        UserEntity GetUserById(int id);
+
+        void ResetPassword(int UserId, ResetPasswordDTO resetPasswordDTO);
     }
 }

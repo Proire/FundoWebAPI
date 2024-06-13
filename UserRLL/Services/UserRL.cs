@@ -9,6 +9,7 @@ using UserRLL.Entity;
 using UserRLL.Interface;
 using UserRLL.Exceptions;
 using UserRLL.Utilities;
+using Microsoft.EntityFrameworkCore;
 
 namespace UserRLL.Services
 {
@@ -22,7 +23,7 @@ namespace UserRLL.Services
         public UserModel AddUser(UserModel user)
         {
             user.Password = PasswordHasher.HashPassword(user.Password);
-            UserEntity userEntity = new UserEntity() { Name=user.Name,UserName = user.UserName, Password=user.Password,PhoneNumber=user.PhoneNumber,Role=user.Role};
+            UserEntity userEntity = new UserEntity() { Name=user.Name,UserName = user.UserName, Password=user.Password,PhoneNumber=user.PhoneNumber,Role=user.Role, Email=user.Email};
             try
             {
                 Context.Users.Add(userEntity);
@@ -34,6 +35,22 @@ namespace UserRLL.Services
                 throw new UserException("Problem While Adding User");
             }
             return user;
+        }
+
+        public UserEntity GetUserById(int id)
+        {
+            try
+            {
+                var user = Context.Users.FirstOrDefault(p => p.Id == id);
+                if (user != null)
+                    return user;
+                throw new UserException($"No User Found with id : {id}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
         }
 
         public ICollection<UserEntity> GetUsers()
@@ -56,6 +73,24 @@ namespace UserRLL.Services
             else
             {
                 throw new UserException("Invalid UserName, Register First");
+            }
+        }
+
+        public void ResetPassword(int UserId, ResetPasswordDTO resetPasswordDTO)
+        {
+            try
+            {
+                var existingUser = Context.Users.FirstOrDefault(p => p.Id == UserId);
+                if (existingUser != null)
+                {
+                    existingUser.Password = PasswordHasher.HashPassword(resetPasswordDTO.Password);
+                    Context.SaveChanges();
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"An error occurred while updating Note with ID : {UserId}");
+                throw;
             }
         }
     }

@@ -33,7 +33,7 @@ namespace FundoWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return new ResponseModel<NoteEntity> { Status=false, Message=ex.Message, Data=null};
+                return new ResponseModel<NoteEntity> { Status=false, Message=ex.Message, Data= null};
             }
         }
 

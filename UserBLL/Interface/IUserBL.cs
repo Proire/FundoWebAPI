@@ -13,5 +13,8 @@ namespace UserBLL.Interface
         UserModel AddUser(UserModel model);
         UserEntity Login(LoginModel login);
         ICollection<UserEntity> GetUsers();
+        UserEntity GetUserById(int id);
+
+        void ResetPassword(int userId, ResetPasswordDTO resetPasswordDTO);
     }
 }

@@ -14,6 +14,8 @@ namespace UserModelLayer
 
         public string Role { get; set; } = string.Empty;
 
+        public string Email { get; set; } = string.Empty;
+
         public override string ToString()
         {
             return $"{Name}, {UserName}, {Password}, {PhoneNumber}";

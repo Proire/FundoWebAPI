@@ -36,6 +36,20 @@ namespace UserBLL.Service
             return userModel;
         }
 
+        public UserEntity GetUserById(int id)
+        {
+           
+            try
+            {
+                return userRll.GetUserById(id);
+            }
+            catch (UserException ie)
+            {
+                Console.WriteLine(ie.Message);
+                throw;
+            }
+        }
+
         public ICollection<UserEntity> GetUsers()
         {
             return userRll.GetUsers();
@@ -52,6 +66,11 @@ namespace UserBLL.Service
                 Console.WriteLine(ie.Message);
                 throw;
             }
+        }
+
+        public void ResetPassword(int userId, ResetPasswordDTO resetPasswordDTO)
+        {
+            userRll.ResetPassword(userId, resetPasswordDTO);
         }
     }
 }

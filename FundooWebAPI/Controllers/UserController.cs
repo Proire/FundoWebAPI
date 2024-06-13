@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Org.BouncyCastle.Crypto.Fpe;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -12,6 +13,7 @@ using UserBLL.Interface;
 using UserModelLayer;
 using UserRLL.Entity;
 using UserRLL.Exceptions;
+using UserRLL.Utilities;
 
 namespace FundooWebAPI.Controllers
 {
@@ -20,9 +22,11 @@ namespace FundooWebAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserBL userBLL;
-        public UserController(IUserBL userBLL, IConfiguration configuration) 
+        private readonly EmailSender _emailSender;
+        public UserController(IUserBL userBLL, IConfiguration configuration, EmailSender emailSender)
         {
             this.userBLL = userBLL;
+            _emailSender = emailSender;
         }
 
 
@@ -33,7 +37,7 @@ namespace FundooWebAPI.Controllers
             try
             {
                 UserModel model = userBLL.AddUser(user);
-                ResponseModel<UserModel> responseModel = new ResponseModel<UserModel>() { Data = model , Message = "User Added SuccessFully, Go to Login" };
+                ResponseModel<UserModel> responseModel = new ResponseModel<UserModel>() { Data = model, Message = "User Added SuccessFully, Go to Login" };
                 return responseModel;
             }
             catch (UserException ex)
@@ -56,7 +60,50 @@ namespace FundooWebAPI.Controllers
             }
             catch (UserException ex)
             {
-                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = ex.Message, Data = string.Empty, Status = false};
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = ex.Message, Data = string.Empty, Status = false };
+                return responseModel;
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("/forgetPassword")]
+        public ResponseModel<string> ForgotPassword()
+        {
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value); // userId from token 
+            try
+            {
+                UserEntity user = userBLL.GetUserById(UserId); // fetched user using userId
+                var token = GenerateToken(user);
+                
+                var resetPasswordUrl = $"http://localhost:5288/swagger/index.html?token={token}";
+                _emailSender.SendEmail(new EmailDTO() {To = user.Email,Subject="Reset Password",Body=resetPasswordUrl});
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = "Valid User", Data = token};
+                return responseModel;
+            }
+            catch (UserException ex)
+            {
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = ex.Message, Data = string.Empty, Status = false };
+                return responseModel;
+            }
+        }
+
+        [Authorize]
+        [HttpPatch]
+        [Route("/resetPassword")]
+        public ResponseModel<string> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
+        {
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            string token = HttpContext.Request.Headers["Authorization"];
+            try
+            {
+                userBLL.ResetPassword(UserId,resetPasswordDTO);
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = "Password Updated", Data = string.Empty };
+                return responseModel;
+            }
+            catch (UserException ex)
+            {
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = ex.Message, Data = string.Empty, Status = false };
                 return responseModel;
             }
         }
@@ -111,6 +158,5 @@ namespace FundooWebAPI.Controllers
             var token = new JwtSecurityToken(issuer, audience,claims,expires:DateTime.Now.AddMinutes(15),signingCredentials:credentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
     }
 }

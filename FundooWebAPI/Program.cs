@@ -9,6 +9,7 @@ using UserBLL.Service;
 using UserRLL.Context;
 using UserRLL.Interface;
 using UserRLL.Services;
+using UserRLL.Utilities;
 
 namespace FundooWebAPI
 {
@@ -25,7 +26,11 @@ namespace FundooWebAPI
             
             // Add DbContext
             builder.Services.AddDbContextPool<UserDBContext>(option => option.UseSqlServer(Environment.GetEnvironmentVariable("UserDbConnection")));
-         
+
+            // Add Email Service 
+            builder.Services.AddTransient<EmailSender>();
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
             // Add Services
             builder.Services.AddTransient<IUserBL,UserBL>();
             builder.Services.AddTransient<IUserRL,UserRL>();
