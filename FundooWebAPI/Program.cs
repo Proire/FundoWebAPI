@@ -30,7 +30,6 @@ namespace FundooWebAPI
 
             // Add Email Service 
             builder.Services.AddTransient<EmailSender>();
-            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
             // Add Services
             builder.Services.AddTransient<IUserBL,UserBL>();
@@ -43,7 +42,13 @@ namespace FundooWebAPI
             builder.Services.AddTransient<ILabelRL, LabelRL>();
 
             builder.Services.AddTransient<INoteLabelBL, NoteLabelBL>();
-            builder.Services.AddTransient<INoteLabelRL, NoteLabelRL>(); 
+            builder.Services.AddTransient<INoteLabelRL, NoteLabelRL>();
+
+            builder.Services.AddSingleton<JwtTokenGenerator>();
+
+
+            // Add Appsettings Configuration Builder 
+            builder.Configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             // Getting Configuration object which now represents appsettings.json inside our program
             var configuration = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json").Build();

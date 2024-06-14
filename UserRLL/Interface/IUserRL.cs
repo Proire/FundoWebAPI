@@ -10,15 +10,14 @@ namespace UserRLL.Interface
 {
     public interface IUserRL
     {
+        // Register User 
         UserEntity AddUser(UserModel user);
+
+        // Validate User 
         UserEntity LoginUser(LoginModel login);
-
         ICollection<UserEntity> GetUsers();
-
         UserEntity GetUserById(int id);
-
-        UserEntity GetUserByEmail(EmailModel email);
-
-        void ResetPassword(int UserId, ResetPasswordDTO resetPasswordDTO);
+        UserEntity GetUserByEmail(string email);
+        void ResetPassword(int UserId, string password);
     }
 }

@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace UserRLL.Exceptions
 {
-    public class LabelException : ApplicationException
+    public class LabelException(string message) : ApplicationException(message)
     {
-        public LabelException(string message):base(message) { }
     }
 }

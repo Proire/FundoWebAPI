@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace UserRLL.Exceptions
 {
-    public class NoteException : ApplicationException
+    public class NoteException(string message) : ApplicationException(message)
     {
-        public NoteException(string message) : base(message) { }
     }
 }

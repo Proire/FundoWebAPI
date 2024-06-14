@@ -48,7 +48,7 @@ namespace UserBLL.Service
             }
         }
 
-        public UserEntity GetUserByEmail(EmailModel email)
+        public UserEntity GetUserByEmail(string email)
         {
 
             try
@@ -80,11 +80,11 @@ namespace UserBLL.Service
             }
         }
 
-        public void ResetPassword(int userId, ResetPasswordDTO resetPasswordDTO)
+        public void ResetPassword(int userId, string password)
         { 
             try
             {
-                userRll.ResetPassword(userId, resetPasswordDTO);
+                userRll.ResetPassword(userId, password);
             }
             catch (UserException ie)
             {

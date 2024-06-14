@@ -53,10 +53,6 @@ namespace UserRLL.Context
                 .HasOne(nl => nl.Label)
                 .WithMany(l => l.NoteLabels)
                 .HasForeignKey(nl => nl.LabelId);
-
-
-
-
         }
     }
 }

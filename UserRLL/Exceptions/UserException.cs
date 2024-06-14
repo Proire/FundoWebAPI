@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace UserRLL.Exceptions
 {
-    public class UserException : ApplicationException
+    public class UserException(string message) : ApplicationException(message)
     {
-        public UserException(string message):base(message) { }
     }
 }

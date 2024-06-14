@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace UserRLL.Exceptions
 {
-    public class NoteLabelException: ApplicationException
+    public class NoteLabelException(string msg) : ApplicationException(msg)
     {
-        public NoteLabelException(string msg) :base(msg){ }
     }
 }

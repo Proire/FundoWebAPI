@@ -51,14 +51,14 @@ namespace UserRLL.Services
             }
         }
 
-        public UserEntity GetUserByEmail(EmailModel email)
+        public UserEntity GetUserByEmail(string email)
         {
             try
             {
-                var user = Context.Users.FirstOrDefault(p => p.Email == email.Email);
+                var user = Context.Users.FirstOrDefault(p => p.Email == email);
                 if (user != null)
                     return user;
-                throw new UserException($"No User Found with email : {email.Email}");
+                throw new UserException($"No User Found with email : {email}");
             }
             catch (Exception ex)
             {
@@ -93,24 +93,27 @@ namespace UserRLL.Services
                 { 
                     return user; 
                 }
-                throw new UserException("Wrong Password, ReEnter Password");
+                throw new UserException("Wrong Password, Reenter Password");
             }
             
             throw new UserException("Invalid UserName, Register First");
             
         }
 
-        public void ResetPassword(int UserId, ResetPasswordDTO resetPasswordDTO)
+        public void ResetPassword(int UserId, string password)
         {
             try
             {
                 var existingUser = Context.Users.FirstOrDefault(p => p.Id == UserId);
                 if (existingUser != null)
                 {
-                    existingUser.Password = PasswordHasher.HashPassword(resetPasswordDTO.Password);
+                    existingUser.Password = PasswordHasher.HashPassword(password);
                     Context.SaveChanges();
                 }
-                throw new UserException($"No User Found with id : {UserId}");
+                else
+                {
+                    throw new UserException($"No User Found with id : {UserId}");
+                }
             }
             catch (Exception)
             {

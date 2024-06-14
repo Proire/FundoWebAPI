@@ -15,8 +15,8 @@ namespace UserBLL.Interface
         ICollection<UserEntity> GetUsers();
         UserEntity GetUserById(int id);
 
-        UserEntity GetUserByEmail(EmailModel email);
+        UserEntity GetUserByEmail(string email);
 
-        void ResetPassword(int userId, ResetPasswordDTO resetPasswordDTO);
+        void ResetPassword(int userId, string password);
     }
 }
