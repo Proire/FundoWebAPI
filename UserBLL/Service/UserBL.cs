@@ -92,18 +92,5 @@ namespace UserBLL.Service
                 throw;
             }
         }
-
-        public void VerifyEmail(int userId)
-        {
-            try
-            {
-                userRll.VerifiedEmail(userId);
-            }
-            catch (UserException ie)
-            {
-                Console.WriteLine(ie.Message);
-                throw;
-            }
-        }
     }
 }

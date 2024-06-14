@@ -67,7 +67,7 @@ namespace FundoWebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return new ResponseModel<IList<NoteEntity>>() { Data = null, Message = ex.Message };
+                return new ResponseModel<IList<NoteEntity>>() { Data = null, Message = ex.Message , Status = false};
             }
         }
 

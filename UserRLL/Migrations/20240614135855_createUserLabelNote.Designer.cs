@@ -12,8 +12,8 @@ using UserRLL.Context;
 namespace UserRLL.Migrations
 {
     [DbContext(typeof(UserDBContext))]
-    [Migration("20240612121711_AddEmail")]
-    partial class AddEmail
+    [Migration("20240614135855_createUserLabelNote")]
+    partial class createUserLabelNote
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,24 @@ namespace UserRLL.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("UserRLL.Entity.LabelEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("LableName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Labels");
+                });
 
             modelBuilder.Entity("UserRLL.Entity.NoteEntity", b =>
                 {
@@ -62,6 +80,21 @@ namespace UserRLL.Migrations
                     b.ToTable("Notes");
                 });
 
+            modelBuilder.Entity("UserRLL.Entity.NoteLabelEntity", b =>
+                {
+                    b.Property<int>("NoteId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LabelId")
+                        .HasColumnType("int");
+
+                    b.HasKey("NoteId", "LabelId");
+
+                    b.HasIndex("LabelId");
+
+                    b.ToTable("NoteLabels");
+                });
+
             modelBuilder.Entity("UserRLL.Entity.UserEntity", b =>
                 {
                     b.Property<int>("Id")
@@ -73,6 +106,9 @@ namespace UserRLL.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsEmailVerified")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -113,6 +149,35 @@ namespace UserRLL.Migrations
                         .HasForeignKey("UserEntityId");
 
                     b.Navigation("UserEntity");
+                });
+
+            modelBuilder.Entity("UserRLL.Entity.NoteLabelEntity", b =>
+                {
+                    b.HasOne("UserRLL.Entity.LabelEntity", "Label")
+                        .WithMany("NoteLabels")
+                        .HasForeignKey("LabelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("UserRLL.Entity.NoteEntity", "Note")
+                        .WithMany("NoteLabels")
+                        .HasForeignKey("NoteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Label");
+
+                    b.Navigation("Note");
+                });
+
+            modelBuilder.Entity("UserRLL.Entity.LabelEntity", b =>
+                {
+                    b.Navigation("NoteLabels");
+                });
+
+            modelBuilder.Entity("UserRLL.Entity.NoteEntity", b =>
+                {
+                    b.Navigation("NoteLabels");
                 });
 
             modelBuilder.Entity("UserRLL.Entity.UserEntity", b =>

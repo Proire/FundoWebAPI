@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -37,6 +38,12 @@ namespace FundooWebAPI
 
             builder.Services.AddTransient<INoteBL, NoteBL>();
             builder.Services.AddTransient<INoteRL ,NoteRL>();
+
+            builder.Services.AddTransient<ILabelBL, LabelBL>();
+            builder.Services.AddTransient<ILabelRL, LabelRL>();
+
+            builder.Services.AddTransient<INoteLabelBL, NoteLabelBL>();
+            builder.Services.AddTransient<INoteLabelRL, NoteLabelRL>(); 
 
             // Getting Configuration object which now represents appsettings.json inside our program
             var configuration = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json").Build();

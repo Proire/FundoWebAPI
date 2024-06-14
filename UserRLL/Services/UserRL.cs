@@ -118,30 +118,5 @@ namespace UserRLL.Services
                 throw;
             }
         }
-
-        public void VerifiedEmail(int UserId)
-        {
-            try
-            {
-                var existingUser = Context.Users.FirstOrDefault(p => p.Id == UserId);
-                if (existingUser != null)
-                {
-                    if (!existingUser.IsEmailVerified)
-                    {
-                        existingUser.IsEmailVerified = true;
-                        Context.SaveChanges();
-                    }
-                    else
-                        throw new UserException("Email Verified Already");
-                }
-                else
-                    throw new UserException($"No User Found with id : {UserId}");
-            }
-            catch (Exception)
-            {
-                Console.WriteLine($"An error occurred while updating Note with ID : {UserId}");
-                throw;
-            }
-        }
     }
 }

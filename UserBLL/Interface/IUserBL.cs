@@ -18,7 +18,5 @@ namespace UserBLL.Interface
         UserEntity GetUserByEmail(EmailModel email);
 
         void ResetPassword(int userId, ResetPasswordDTO resetPasswordDTO);
-
-        void VerifyEmail(int userId);
     }
 }
