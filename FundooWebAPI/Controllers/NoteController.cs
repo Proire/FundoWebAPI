@@ -10,6 +10,7 @@ using UserRLL.Entity;
 
 namespace FundoWebAPI.Controllers
 {
+    [Authorize(AuthenticationSchemes = "CrudScheme")]
     [Route("api/[controller]")]
     [ApiController]
     public class NoteController : ControllerBase
@@ -21,7 +22,6 @@ namespace FundoWebAPI.Controllers
             this.noteBL = noteBL;
         }
 
-        [Authorize]
         [HttpPost]
         public ResponseModel<NoteEntity> AddNote([FromBody] NoteModel model)
         {
@@ -37,7 +37,6 @@ namespace FundoWebAPI.Controllers
             }
         }
 
-        [Authorize]
         [HttpGet("{id}")]
         public ResponseModel<NoteEntity> GetNoteById(int id)
         {
@@ -54,7 +53,6 @@ namespace FundoWebAPI.Controllers
             }
         }
 
-        [Authorize(Policy = "CrudPolicy")]
         [Route("notes")]
         [HttpGet]
         public ResponseModel<IList<NoteEntity>> GetNotes()
@@ -71,7 +69,6 @@ namespace FundoWebAPI.Controllers
             }
         }
 
-        [Authorize]
         [HttpDelete("{id}")]
         public ResponseModel<NoteEntity> DeleteNote(int id)
         {
@@ -87,7 +84,6 @@ namespace FundoWebAPI.Controllers
             }
         }
 
-        [Authorize]
         [HttpPut("{id}")]
         public ResponseModel<NoteEntity> UpdateNote(int id, [FromBody] NoteModel node)
         {
@@ -104,7 +100,6 @@ namespace FundoWebAPI.Controllers
         }
 
 
-        [Authorize]
         [HttpGet("archive/{id}")]
         public ResponseModel<NoteEntity> ArchiveNote(int id)
         {
@@ -121,7 +116,6 @@ namespace FundoWebAPI.Controllers
             }
         }
 
-        [Authorize]
         [HttpGet("trash/{id}")]
         public ResponseModel<NoteEntity> TrashNote(int id)
         {

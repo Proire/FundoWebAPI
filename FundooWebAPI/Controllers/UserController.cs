@@ -92,7 +92,7 @@ namespace FundooWebAPI.Controllers
             }
         }
 
-        [Authorize(Policy = "UserValidationPolicy")]
+        [Authorize(AuthenticationSchemes = "UserValidationScheme")]
         [HttpPatch]
         [Route("/resetPassword")]
         public ResponseModel<string> ResetPassword([FromBody] string password)

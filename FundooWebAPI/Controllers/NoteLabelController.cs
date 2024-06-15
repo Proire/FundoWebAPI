@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UserBLL.Interface;
@@ -7,6 +8,7 @@ using UserRLL.Entity;
 
 namespace FundoWebAPI.Controllers
 {
+    [Authorize(AuthenticationSchemes = "CrudScheme")]
     [Route("api/[controller]")]
     [ApiController]
     public class NoteLabelController(INoteLabelBL notelabelBL) : ControllerBase

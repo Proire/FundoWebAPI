@@ -102,30 +102,6 @@ namespace FundooWebAPI
                 };
             });
 
-            builder.Services.AddAuthorization(options =>
-            {
-                options.AddPolicy("CrudPolicy", policy =>
-                {
-                    policy.AuthenticationSchemes.Add("CrudScheme");
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("role", "crud_user");
-                });
-
-                options.AddPolicy("UserValidationPolicy", policy =>
-                {
-                    policy.AuthenticationSchemes.Add("UserValidationScheme");
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("purpose", "user_validation");
-                });
-
-                options.AddPolicy("EmailVerificationPolicy", policy =>
-                {
-                    policy.AuthenticationSchemes.Add("EmailVerificationScheme");
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("purpose", "email_verification");
-                });
-            });
-
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

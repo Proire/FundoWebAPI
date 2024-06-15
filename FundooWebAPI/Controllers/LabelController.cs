@@ -10,6 +10,7 @@ using UserRLL.Services;
 
 namespace FundoWebAPI.Controllers
 {
+    [Authorize(AuthenticationSchemes = "CrudScheme")]
     [Route("api/[controller]")]
     [ApiController]
     public class LabelsController : ControllerBase
@@ -21,7 +22,6 @@ namespace FundoWebAPI.Controllers
             _labelService = labelService;
         }
 
-        [Authorize]
         [HttpGet]
         public ResponseModel<IEnumerable<LabelEntity>> GetAllLabels()
         {
@@ -37,7 +37,6 @@ namespace FundoWebAPI.Controllers
             }
         }
 
-        [Authorize]
         [HttpGet("{id}")]
         public ResponseModel<LabelEntity> GetLabelById(int id)
         {
@@ -53,7 +52,6 @@ namespace FundoWebAPI.Controllers
             }
         }
 
-        [Authorize]
         [HttpPost]
         public ResponseModel<string> CreateLabel([FromBody] LabelModel label)
         {
@@ -68,7 +66,6 @@ namespace FundoWebAPI.Controllers
             }
         }
 
-        [Authorize]
         [HttpPut("{id}")]
         public ResponseModel<LabelEntity> UpdateLabel(int id, [FromBody] LabelModel label)
         {
@@ -83,7 +80,6 @@ namespace FundoWebAPI.Controllers
             }
         }
 
-        [Authorize] 
         [HttpDelete("{id}")]
         public ResponseModel<LabelEntity> DeleteLabel(int id)
         {
