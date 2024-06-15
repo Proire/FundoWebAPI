@@ -14,6 +14,6 @@ namespace UserBLL.Interface
 
         IEnumerable<LabelEntity> GetLabelsForNotes(int noteId);
 
-        LabelEntity RemovelabelfromNote(int labelId, int noteId);
+        NoteLabelEntity RemovelabelfromNote(int labelId, int noteId);
     }
 }

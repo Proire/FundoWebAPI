@@ -48,7 +48,7 @@ namespace UserBLL.Service
             }
         }
 
-        public LabelEntity RemovelabelfromNote(int labelId, int noteId)
+        public NoteLabelEntity RemovelabelfromNote(int labelId, int noteId)
         {
             try
             {

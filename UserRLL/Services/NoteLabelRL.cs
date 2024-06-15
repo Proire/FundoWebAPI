@@ -17,39 +17,38 @@ namespace UserRLL.Services
         private readonly UserDBContext _context = context;
         public string AddNoteToLabel(int labelId, int noteId)
         {
-            // fetch label 
-            var label = _context.Labels.Include(l => l.NoteLabels).FirstOrDefault(l => l.Id == labelId);
-            if (label == null)
+            // find label with id labelid
+            var label = _context.Labels.Any(p=> p.Id == labelId);
+            if (!label)
             {
                 throw new LabelException($"Label with ID {labelId} not found");
             }
-            // find notes with id noteid
-            var note = _context.Notes.Find(noteId);
-            if (note == null)
+            // find note with id noteid
+            var note = _context.Notes.Any(p=> p.Id == noteId);
+            if (!note)
             {
                 throw new NoteException($"Note with ID {noteId} not found");
             }
 
             // Check if the association already exists
-            if (!label.NoteLabels.Any(nl => nl.NoteId == noteId))
+            if (!_context.NoteLabels.Any(p => p.LabelId == labelId && p.NoteId == noteId))
             {
-                label.NoteLabels.Add(new NoteLabelEntity { NoteId = noteId, LabelId = labelId });
+                _context.NoteLabels.Add(new NoteLabelEntity { NoteId = noteId, LabelId = labelId });
                 _context.SaveChanges();
-                return $"Label with ID {labelId} is associated with Note ID{noteId}";
+                return $"Label with ID {labelId} is associated with Note ID {noteId}";
             }
             throw new NoteLabelException($"Label with ID {labelId} is not associated with Note ID {noteId}");
         }
 
         public IEnumerable<LabelEntity> GetLabelsForNotes(int noteId)
         {
-            var note = _context.Notes.Include(n => n.NoteLabels).ThenInclude(nl => nl.Label)
-                              .FirstOrDefault(n => n.Id == noteId);
-            if (note == null)
+            var labelsWithNoteId = _context.Notes.Include(n => n.NoteLabels).ThenInclude(nl => nl.Label).FirstOrDefault(n => n.Id == noteId);
+            if (labelsWithNoteId == null)
             {
                 throw new NoteException($"Note with ID {noteId} not found");
             }
 
-            var labels = note.NoteLabels.Select(nl => nl.Label).ToList();
+            var labels = labelsWithNoteId.NoteLabels.Select(nl => nl.Label).ToList();
             return labels;
         }
 
@@ -67,25 +66,25 @@ namespace UserRLL.Services
             return notes;
         }
 
-        public LabelEntity RemovelabelfromNote(int labelId, int noteId)
+        public NoteLabelEntity RemovelabelfromNote(int labelId, int noteId)
         {
-            var label = _context.Labels.Include(l => l.NoteLabels).FirstOrDefault(l => l.Id == labelId);
-            if (label == null)
+            var label = _context.Labels.Any(n=>n.Id==labelId);
+            if (!label)
             {
                 throw new LabelException($"Label with ID {labelId} not found");
             }
 
-            var noteLabel = label.NoteLabels.FirstOrDefault(nl => nl.NoteId == noteId);
-            if (noteLabel == null)
+            var note = _context.Notes.Any(n=>n.Id==noteId);
+            if (!note)
             {
                 throw new NoteException($"Note with ID {noteId} not found");
             }
-
+            NoteLabelEntity noteLabelEntity = new NoteLabelEntity() {LabelId=labelId,NoteId=noteId };
             try
             {
-                label.NoteLabels.Remove(noteLabel); // Remove the association
+                _context.NoteLabels.Remove(noteLabelEntity); // Remove the association
                 _context.SaveChanges();
-                return _context.Labels.FirstOrDefault(p=>p.Id==noteLabel.LabelId) ;
+                return noteLabelEntity ;
             }
             catch (Exception ex)
             {

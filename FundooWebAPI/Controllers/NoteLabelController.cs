@@ -59,17 +59,17 @@ namespace FundoWebAPI.Controllers
         }
 
         [HttpDelete("notes/{noteId}/labels/{labelId}")]
-        public ResponseModel<LabelEntity> RemoveLabelFromNote(int noteId, int labelId)
+        public ResponseModel<NoteLabelEntity> RemoveLabelFromNote(int noteId, int labelId)
         {
             try
             {
                 var label = _noteLabelBL.RemovelabelfromNote(noteId, labelId);
-                ResponseModel<LabelEntity> responseModel = new ResponseModel<LabelEntity>() { Message = "Removed Label from note", Data = label };
+                ResponseModel<NoteLabelEntity> responseModel = new ResponseModel<NoteLabelEntity>() { Message = "Removed Label from note", Data = label };
                 return responseModel;
             }
             catch (Exception ie)
             {
-                return new ResponseModel<LabelEntity>() { Status = false, Message = "Error Occured while Adding Note", Data = null };
+                return new ResponseModel<NoteLabelEntity>() { Status = false, Message = "Error Occured while Adding Note", Data = null };
             }
         }
     }
