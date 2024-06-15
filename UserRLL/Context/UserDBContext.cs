@@ -23,6 +23,8 @@ namespace UserRLL.Context
 
         public DbSet<NoteLabelEntity> NoteLabels { get; set; }
 
+        public DbSet<CollaboraterEntity> Collaboraters { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -37,8 +39,13 @@ namespace UserRLL.Context
 
             modelBuilder.Entity<NoteEntity>()
             .HasOne(n => n.UserEntity) // NoteEntity has one UserEntity
-        .       WithMany(u => u.Notes) // UserEntity can have many NoteEntity instances
+            .WithMany(u => u.Notes) // UserEntity can have many NoteEntity instances
             .HasForeignKey(n => n.UserEntityId); // Foreign key property in NoteEntity
+
+            modelBuilder.Entity<CollaboraterEntity>().
+                HasOne(n => n.NoteEntity) 
+                .WithMany(n => n.CollaboraterEntities)
+                .HasForeignKey(n => n.NoteEntityId);
 
             // for Many to Many relationship between Note and Label 
             modelBuilder.Entity<NoteLabelEntity>()

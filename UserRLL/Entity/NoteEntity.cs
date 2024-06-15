@@ -14,6 +14,7 @@ namespace UserRLL.Entity
     public class NoteEntity
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Title is required.")]
@@ -43,6 +44,8 @@ namespace UserRLL.Entity
 
         [JsonIgnore]
         public ICollection<NoteLabelEntity> NoteLabels { get; set; } // Navigation property
+
+        public ICollection<CollaboraterEntity> CollaboraterEntities { get; set; } // Navigation property
 
     }
 }

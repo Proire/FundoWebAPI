@@ -44,6 +44,9 @@ namespace FundooWebAPI
             builder.Services.AddTransient<INoteLabelBL, NoteLabelBL>();
             builder.Services.AddTransient<INoteLabelRL, NoteLabelRL>();
 
+            builder.Services.AddTransient<ICollaboratorBL, CollaboratorBL>();
+            builder.Services.AddTransient<ICollaboratorRL, CollaboratorRL>();
+
             builder.Services.AddSingleton<JwtTokenGenerator>();
 
 
@@ -58,8 +61,6 @@ namespace FundooWebAPI
             var secretKey = Environment.GetEnvironmentVariable("SecretKey");
             var issuer = config["Jwt:ValidIssuer"];
             var audience = config["Jwt:ValidAudience"];
-
-            Console.WriteLine(secretKey+" "+issuer+" "+audience);
 
             // JWT Authentication service 
             builder.Services.AddAuthentication().AddJwtBearer("CrudScheme", options =>
