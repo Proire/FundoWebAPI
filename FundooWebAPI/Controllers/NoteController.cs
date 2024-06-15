@@ -54,7 +54,7 @@ namespace FundoWebAPI.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Policy = "CrudPolicy")]
         [Route("notes")]
         [HttpGet]
         public ResponseModel<IList<NoteEntity>> GetNotes()

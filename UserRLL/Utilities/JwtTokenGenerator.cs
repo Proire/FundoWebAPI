@@ -13,30 +13,63 @@ namespace UserRLL.Utilities
 {
     public class JwtTokenGenerator
     {
-        private readonly IConfiguration _configuration;
+        private readonly string _secretKey;
+        private readonly string _issuer;
+        private readonly string _audience;
 
         public JwtTokenGenerator(IConfiguration configuration)
         {
-            _configuration = configuration;
+            _secretKey = Environment.GetEnvironmentVariable("SecretKey") ?? string.Empty;
+            _issuer = configuration["JWT:ValidIssuer"] ?? string.Empty;
+            _audience = configuration["JWT:ValidAudience"] ?? string.Empty;
         }
-        public string GenerateToken(UserEntity user)
+
+        public string GenerateCrudToken(string userId, string userName, TimeSpan tokenExpiry)
         {
-
-            // Retrieve issuer and audience from appsettings.json
-            string issuer = _configuration["JWT:ValidIssuer"] ?? string.Empty;
-            string audience = _configuration["JWT:ValidAudience"] ?? string.Empty;
-
-            var security = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SecretKey") ?? string.Empty));
-            var credentials = new SigningCredentials(security, SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier,Convert.ToString(user.Id)),
-                new Claim(ClaimTypes.GivenName,user.UserName),
-                new Claim(ClaimTypes.MobilePhone,user.PhoneNumber),
-                new Claim(ClaimTypes.Role,user.Role),
-                new Claim(ClaimTypes.Email,user.Email),
+                new Claim(ClaimTypes.NameIdentifier, Convert.ToString(userId)),
+                new Claim(ClaimTypes.Name, userName),
+                new Claim(ClaimTypes.Role, "crud_user")
             };
-            var token = new JwtSecurityToken(issuer, audience, claims, expires: DateTime.Now.AddMinutes(15), signingCredentials: credentials);
+
+            return GenerateToken(claims, tokenExpiry);
+        }
+
+        public string GenerateUserValidationToken(string userId, TimeSpan tokenExpiry)
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, Convert.ToString(userId)),
+                new Claim("purpose", "user_validation")
+            };
+
+            return GenerateToken(claims, tokenExpiry);
+        }
+
+        public string GenerateEmailVerificationToken(string otp, TimeSpan tokenExpiry)
+        {
+            var claims = new[]
+            {
+                new Claim("otp", otp),
+                new Claim("purpose", "email_verification")
+            };
+
+            return GenerateToken(claims, tokenExpiry);
+        }
+
+        private string GenerateToken(Claim[] claims, TimeSpan tokenExpiry)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _issuer,
+                audience: _audience,
+                claims: claims,
+                expires: DateTime.Now.Add(tokenExpiry),
+                signingCredentials: creds);
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }

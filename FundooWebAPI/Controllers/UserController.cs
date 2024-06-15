@@ -58,7 +58,8 @@ namespace FundooWebAPI.Controllers
             try
             {
                 UserEntity user = userBLL.Login(model);
-                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = "LoggedIn Successfully!", Data = _jwtTokenGenerator.GenerateToken(user) };
+                var token = _jwtTokenGenerator.GenerateCrudToken(Convert.ToString(user.Id), user.UserName, TimeSpan.FromMinutes(15));
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = "LoggedIn Successfully!", Data =  token};
                 return responseModel;
             }
             catch (UserException ex)
@@ -81,7 +82,7 @@ namespace FundooWebAPI.Controllers
                 }
 
                 UserEntity user = userBLL.GetUserByEmail(email);
-                var token = _jwtTokenGenerator.GenerateToken(user);
+                var token = _jwtTokenGenerator.GenerateUserValidationToken(Convert.ToString(user.Id),TimeSpan.FromMinutes(15));
                 _emailSender.SendEmail(new EmailDTO() {To = user.Email,Subject="Reset Password",Body=token});
                 return new ResponseModel<string>() { Message = "Valid User", Data = token};
             }
@@ -91,7 +92,7 @@ namespace FundooWebAPI.Controllers
             }
         }
 
-        [Authorize]
+        [Authorize(Policy = "UserValidationPolicy")]
         [HttpPatch]
         [Route("/resetPassword")]
         public ResponseModel<string> ResetPassword([FromBody] string password)

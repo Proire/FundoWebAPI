@@ -52,17 +52,80 @@ namespace FundooWebAPI
 
             // Getting Configuration object which now represents appsettings.json inside our program
             var configuration = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json").Build();
+
+            // Getting Values from AppSettings.json
+            var config = builder.Configuration;
+            var secretKey = Environment.GetEnvironmentVariable("SecretKey");
+            var issuer = config["Jwt:ValidIssuer"];
+            var audience = config["Jwt:ValidAudience"];
+
+            Console.WriteLine(secretKey+" "+issuer+" "+audience);
+
             // JWT Authentication service 
-            builder.Services.AddAuthentication( JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,options =>
-            options.TokenValidationParameters = new TokenValidationParameters
+            builder.Services.AddAuthentication().AddJwtBearer("CrudScheme", options =>
             {
-                ValidateIssuerSigningKey = true,
-                ValidateAudience = true,
-                ValidateIssuer = true,
-                ValidIssuer = configuration["JWT:ValidIssuer"],
-                ValidAudience = configuration["JWT:ValidAudience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SecretKey") ?? string.Empty))
-            }); 
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                };
+            })
+            .AddJwtBearer("UserValidationScheme", options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                };
+            })
+            .AddJwtBearer("EmailVerificationScheme", options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = issuer,
+                    ValidAudience = audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                };
+            });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("CrudPolicy", policy =>
+                {
+                    policy.AuthenticationSchemes.Add("CrudScheme");
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("role", "crud_user");
+                });
+
+                options.AddPolicy("UserValidationPolicy", policy =>
+                {
+                    policy.AuthenticationSchemes.Add("UserValidationScheme");
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("purpose", "user_validation");
+                });
+
+                options.AddPolicy("EmailVerificationPolicy", policy =>
+                {
+                    policy.AuthenticationSchemes.Add("EmailVerificationScheme");
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("purpose", "email_verification");
+                });
+            });
+
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
