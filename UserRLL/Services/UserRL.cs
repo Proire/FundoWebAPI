@@ -67,13 +67,14 @@ namespace UserRLL.Services
             }
         }
 
-        public ICollection<UserEntity> GetUsers()
+        public async Task<ICollection<UserEntity>> GetUsers()
         {
             try
             {
-                var Users = Context.Users.ToList();
-                if(Users.Count>0)
-                    return Users;
+
+                var users = await Context.Users.ToListAsync();
+                if(users.Count > 0)
+                    return users;
                 throw new UserException("No Users Found");
             }
             catch (Exception ex)
@@ -118,6 +119,49 @@ namespace UserRLL.Services
             catch (Exception)
             {
                 Console.WriteLine($"An error occurred while updating Note with ID : {UserId}");
+                throw;
+            }
+        }
+
+        public async Task<UserEntity> DeleteUser(int UserId)
+        {
+            try
+            {
+                var existingUser =  await Context.Users.FirstOrDefaultAsync(x => x.Id == UserId);
+                if (existingUser == null)
+                    throw new UserException($"User with id {UserId} not found");
+                Context.Users.Remove(existingUser);
+                await Context.SaveChangesAsync();
+                return existingUser;
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
+        }
+
+        public async Task<UserEntity> UpdateUser(int UserId, UserModel user)
+        {
+            try
+            {
+                var existingUser = await Context.Users.FirstOrDefaultAsync(x => x.Id == UserId);
+                if (existingUser == null)
+                    throw new UserException($"User with id {UserId} not found");
+                existingUser.UserName = user.UserName;
+                existingUser.Password = user.Password;
+                existingUser.Email = user.Email;
+                existingUser.Name = user.Name;
+                existingUser.PhoneNumber = user.PhoneNumber;
+                existingUser.Role = user.Role;
+
+                Context.Users.Update(existingUser);   
+                await Context.SaveChangesAsync();
+                return existingUser;
+            }
+            catch(Exception e ) 
+            {
+                Console.WriteLine(e.Message);
                 throw;
             }
         }

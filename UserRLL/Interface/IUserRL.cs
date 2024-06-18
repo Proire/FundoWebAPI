@@ -10,14 +10,13 @@ namespace UserRLL.Interface
 {
     public interface IUserRL
     {
-        // Register User 
-        UserEntity AddUser(UserModel user);
-
-        // Validate User 
-        UserEntity LoginUser(LoginModel login);
-        ICollection<UserEntity> GetUsers();
-        UserEntity GetUserById(int id);
-        UserEntity GetUserByEmail(string email);
-        void ResetPassword(int UserId, string password);
+        UserEntity AddUser(UserModel user);  // add 
+        UserEntity LoginUser(LoginModel login);   // verify 
+        Task<ICollection<UserEntity>> GetUsers();   // get all users 
+        UserEntity GetUserById(int id);     // get user by id 
+        UserEntity GetUserByEmail(string email);   // get user by email 
+        void ResetPassword(int UserId, string password);  // reset password 
+        Task<UserEntity> DeleteUser(int UserId);  // delete user 
+        Task<UserEntity> UpdateUser(int UserId, UserModel user);   // update user 
     }
 }

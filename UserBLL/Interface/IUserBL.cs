@@ -12,11 +12,15 @@ namespace UserBLL.Interface
     {
         UserEntity AddUser(UserModel model);
         UserEntity Login(LoginModel login);
-        ICollection<UserEntity> GetUsers();
+        Task<ICollection<UserEntity>> GetUsers();
         UserEntity GetUserById(int id);
 
         UserEntity GetUserByEmail(string email);
 
         void ResetPassword(int userId, string password);
+
+        Task<UserEntity> DeleteUser(int userId); 
+
+        Task<UserEntity> UpdateUser(int userId, UserModel model);
     }
 }

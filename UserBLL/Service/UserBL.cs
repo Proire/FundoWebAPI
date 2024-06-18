@@ -62,9 +62,9 @@ namespace UserBLL.Service
             }
         }
 
-        public ICollection<UserEntity> GetUsers()
+        public async Task<ICollection<UserEntity>> GetUsers()
         {
-            return userRll.GetUsers();
+            return await userRll.GetUsers();
         }
 
         public UserEntity Login(LoginModel login)
@@ -89,6 +89,32 @@ namespace UserBLL.Service
             catch (UserException ie)
             {
                 Console.WriteLine(ie.Message);
+                throw;
+            }
+        }
+
+        public async Task<UserEntity> DeleteUser(int userId)
+        {
+            try
+            {
+                return await userRll.DeleteUser(userId);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                throw;
+            }
+        }
+
+        public async Task<UserEntity> UpdateUser(int UserId, UserModel model)
+        {
+            try
+            {
+                return await userRll.UpdateUser(UserId, model); 
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
                 throw;
             }
         }

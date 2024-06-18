@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Org.BouncyCastle.Crypto.Fpe;
 using System.IdentityModel.Tokens.Jwt;
@@ -50,6 +51,36 @@ namespace FundooWebAPI.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("/updateUser/{id}")]
+        public async Task<ResponseModel<UserEntity>> UpdateUser(int id, [FromBody] UserModel model)
+        {
+            try
+            {
+                var updateUser = await userBLL.UpdateUser(id, model);
+                return new ResponseModel<UserEntity>() { Message = "User Updated Successfully",Data=updateUser };
+            }
+            catch(Exception e)
+            {
+                return new ResponseModel<UserEntity>() { Status = false,Message = e.Message, Data = null };
+            }
+        }
+
+        [HttpDelete]
+        [Route("/deleteUser/{id}")]
+        public async Task<ResponseModel<UserEntity>> DeleteUser(int id)
+        {
+            try
+            {
+                var updateUser = await userBLL.DeleteUser(id);
+                return new ResponseModel<UserEntity>() { Message = "User Deleted Successfully", Data = updateUser };
+            }
+            catch (Exception e)
+            {
+                return new ResponseModel<UserEntity>() { Status = false, Message = e.Message, Data = null };
+            }
+        }
+
 
         [HttpPost]
         [Route("/login")]
@@ -66,6 +97,21 @@ namespace FundooWebAPI.Controllers
             {
                 ResponseModel<string> responseModel = new ResponseModel<string>() { Message = ex.Message, Data = string.Empty, Status = false };
                 return responseModel;
+            }
+        }
+
+        [HttpGet]
+        [Route("/users")]
+        public async Task<ResponseModel<IEnumerable<UserEntity>>> GetUsers()
+        {
+            try
+            {
+                var users = await userBLL.GetUsers();
+                return new ResponseModel<IEnumerable<UserEntity>>() { Message = "Users Retrieved Successfully", Data = users };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModel<IEnumerable<UserEntity>>() { Status = false, Message = "Problem Occured while retrieving users", Data = null };
             }
         }
 

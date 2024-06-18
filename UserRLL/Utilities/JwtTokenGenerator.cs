@@ -11,18 +11,11 @@ using UserRLL.Entity;
 
 namespace UserRLL.Utilities
 {
-    public class JwtTokenGenerator
+    public class JwtTokenGenerator(IConfiguration configuration)
     {
-        private readonly string _secretKey;
-        private readonly string _issuer;
-        private readonly string _audience;
-
-        public JwtTokenGenerator(IConfiguration configuration)
-        {
-            _secretKey = Environment.GetEnvironmentVariable("SecretKey") ?? string.Empty;
-            _issuer = configuration["JWT:ValidIssuer"] ?? string.Empty;
-            _audience = configuration["JWT:ValidAudience"] ?? string.Empty;
-        }
+        private readonly string _secretKey = Environment.GetEnvironmentVariable("SecretKey") ?? string.Empty;
+        private readonly string _issuer = configuration["JWT:ValidIssuer"] ?? string.Empty;
+        private readonly string _audience = configuration["JWT:ValidAudience"] ?? string.Empty;
 
         public string GenerateCrudToken(string userId, string userName, TimeSpan tokenExpiry)
         {
