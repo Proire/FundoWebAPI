@@ -22,5 +22,6 @@ namespace UserBLL.Interface
         Task<UserEntity> DeleteUser(int userId); 
 
         Task<UserEntity> UpdateUser(int userId, UserModel model);
+
     }
 }

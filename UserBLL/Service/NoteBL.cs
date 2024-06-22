@@ -100,5 +100,29 @@ namespace UserBLL.Service
                 throw;
             }
         }
+
+        public ICollection<NoteEntity> GetAllTrashedNotes(int userId)
+        {
+            try
+            {
+                return _note.GetAllTrashNotes(userId);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public ICollection<NoteEntity> GetAllArchievedNotes(int userId)
+        {
+            try
+            {
+                return _note.GetAllArchieveNotes(userId);   
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

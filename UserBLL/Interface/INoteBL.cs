@@ -22,5 +22,9 @@ namespace UserBLL.Interface
         NoteEntity ArchiveNote(int id, int Userid);
 
         NoteEntity TrashNote(int id, int userId);
+
+        ICollection<NoteEntity> GetAllTrashedNotes(int userId);
+
+        ICollection<NoteEntity> GetAllArchievedNotes(int userId);
     }
 }

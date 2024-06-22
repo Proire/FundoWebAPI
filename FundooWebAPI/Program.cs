@@ -49,6 +49,19 @@ namespace FundooWebAPI
 
             builder.Services.AddSingleton<JwtTokenGenerator>();
 
+            // CORS Policy
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  policy =>
+                                  {
+                                      policy.WithOrigins("https://learn.microsoft.com")  // Allow any origin for testing purposes
+                                        .AllowAnyHeader()
+                                        .AllowAnyMethod();
+                                  });
+            });
 
             // Add Appsettings Configuration Builder 
             builder.Configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -103,6 +116,17 @@ namespace FundooWebAPI
                 };
             });
 
+            // Session State -- Can be implemented using Distributed Caching(Redis)
+            builder.Services.AddDistributedMemoryCache();
+
+            builder.Services.AddSession(options =>
+            {
+                options.Cookie.Name = "_SessionKey";
+                options.IdleTimeout = TimeSpan.FromSeconds(6000);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -116,8 +140,13 @@ namespace FundooWebAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseCors(MyAllowSpecificOrigins);
+
             app.UseAuthentication();
+
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.MapControllers();
 

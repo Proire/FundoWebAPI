@@ -154,5 +154,47 @@ namespace UserRLL.Services
                 throw;
             }
         }
+
+        public ICollection<NoteEntity> GetAllTrashNotes(int userId)
+        {
+            try
+            {
+                if (_dbContext.Users.Any(x => x.Id == userId))
+                {
+                    var notes = _dbContext.Notes.Where(p => p.UserEntityId == userId && p.IsTrashed==true).ToList();
+                    if (notes.Count == 0)
+                        throw new UserException("Empty Trash");
+                    return notes;
+                }
+                else
+                    throw new UserException($"No User with {userId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
+
+        public ICollection<NoteEntity> GetAllArchieveNotes(int userId)
+        {
+            try
+            {
+                if (_dbContext.Users.Any(x => x.Id == userId))
+                {
+                    var notes = _dbContext.Notes.Where(p => p.UserEntityId == userId && p.IsArchived==true).ToList();
+                    if (notes.Count == 0)
+                        throw new UserException("Empty Archive");
+                    return notes;
+                }
+                else
+                    throw new UserException($"No User with {userId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw;
+            }
+        }
     }
 }

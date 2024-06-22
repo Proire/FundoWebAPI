@@ -23,5 +23,9 @@ namespace UserRLL.Interface
         NoteEntity ArchiveNote(int id, int userId);
 
         NoteEntity TrashNote(int id, int userId);
+
+        ICollection<NoteEntity> GetAllTrashNotes(int userId);
+
+        ICollection<NoteEntity> GetAllArchieveNotes(int userId);    
     }
 }

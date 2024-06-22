@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Numerics;
 using System.Security.Claims;
 using System.Xml.Linq;
@@ -16,6 +17,7 @@ namespace FundoWebAPI.Controllers
     public class NoteController : ControllerBase
     {
         private readonly INoteBL noteBL;
+        private readonly string UserKey = "UserId";
 
         public NoteController(INoteBL noteBL)
         {
@@ -26,6 +28,9 @@ namespace FundoWebAPI.Controllers
         public ResponseModel<NoteEntity> AddNote([FromBody] NoteModel model)
         {
             int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            // Using Session State Management
+            HttpContext.Session.SetInt32(UserKey, UserId);
+
             try
             {
                 var addedNote = noteBL.CreateNote(model,UserId);
@@ -40,16 +45,27 @@ namespace FundoWebAPI.Controllers
         [HttpGet("{id}")]
         public ResponseModel<NoteEntity> GetNoteById(int id)
         {
-            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            try
-            {
-                var node = noteBL.GetNote(id,UserId);
-                return new ResponseModel<NoteEntity>() { Message = "Note Retrieved", Data = node };
+            //int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            // Using Session State Management
+            int? UserId = HttpContext.Session.GetInt32(UserKey);
 
-            }
-            catch (Exception ex)
+            if (!UserId.HasValue || UserId == 0)
             {
-                return new ResponseModel<NoteEntity>() { Status = false, Message = ex.Message, Data = null };
+                return new ResponseModel<NoteEntity>{Status = false,Message = "Not Registered User",Data = default};
+            }
+            else
+            {
+                var userId = UserId.Value;
+                Console.WriteLine($"Session State Successful : {userId}");
+                try
+                {
+                    var note = noteBL.GetNote(id, userId);
+                    return new ResponseModel<NoteEntity>{Status = true,Message = "Note Retrieved",Data = note};
+                }
+                catch (Exception ex)
+                {
+                    return new ResponseModel<NoteEntity>{Status = false,Message = ex.Message,Data = null};
+                }
             }
         }
 
@@ -66,6 +82,38 @@ namespace FundoWebAPI.Controllers
             catch (Exception ex)
             {
                 return new ResponseModel<IList<NoteEntity>>() { Data = null, Message = ex.Message , Status = false};
+            }
+        }
+
+        [Route("trashedNotes")]
+        [HttpGet]
+        public ResponseModel<ICollection<NoteEntity>> GetAllTrashedNotes()
+        {
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            try
+            {
+                ICollection<NoteEntity> Notes = noteBL.GetAllTrashedNotes(UserId);    
+                return new ResponseModel<ICollection<NoteEntity>>() { Data = Notes, Message = "Trashed Notes Retrived" };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModel<ICollection<NoteEntity>>() { Data = null, Message = ex.Message, Status = false };
+            }
+        }
+
+        [Route("ArchivedNotes")]
+        [HttpGet]
+        public ResponseModel<ICollection<NoteEntity>> GetAllArchivedNotes()
+        {
+            int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            try
+            {
+                ICollection<NoteEntity> Notes = noteBL.GetAllArchievedNotes(UserId);
+                return new ResponseModel<ICollection<NoteEntity>>() { Data = Notes, Message = "Archived Notes Retrived" };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModel<ICollection<NoteEntity>>() { Data = null, Message = ex.Message, Status = false };
             }
         }
 
