@@ -1,15 +1,6 @@
-using Azure.Identity;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
-using Org.BouncyCastle.Crypto.Fpe;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using System.Text.RegularExpressions;
 using UserBLL.Interface;
 using UserModelLayer;
@@ -26,11 +17,13 @@ namespace FundooWebAPI.Controllers
         private readonly IUserBL userBLL;
         private readonly EmailSender _emailSender;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
-        public UserController( IUserBL userBLL, IConfiguration configuration, EmailSender emailSender, JwtTokenGenerator jwtTokenGenerator)
+        private readonly ICacheService _cacheService;
+        public UserController( IUserBL userBLL, IConfiguration configuration, EmailSender emailSender, JwtTokenGenerator jwtTokenGenerator, ICacheService cacheService)
         {
             this.userBLL = userBLL;
             _emailSender = emailSender;
             _jwtTokenGenerator = jwtTokenGenerator;
+            _cacheService = cacheService;
         }
 
 
@@ -106,10 +99,19 @@ namespace FundooWebAPI.Controllers
         {
             try
             {
+                // Searching Data in Cache
+                var cacheData = _cacheService.GetData<IEnumerable<UserEntity>>("products");
+                if(cacheData != null)
+                {
+                    return new ResponseModel<IEnumerable<UserEntity>>() { Message = "Users Retrieved from Cache", Data = cacheData };
+                }
                 var users = await userBLL.GetUsers();
+                var expirationTime = DateTimeOffset.Now.AddMinutes(10.0);
+                // Persisting data in Database 
+                _cacheService.SetData<IEnumerable<UserEntity>>("products",users,expirationTime);
                 return new ResponseModel<IEnumerable<UserEntity>>() { Message = "Users Retrieved Successfully", Data = users };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new ResponseModel<IEnumerable<UserEntity>>() { Status = false, Message = "Problem Occured while retrieving users", Data = null };
             }

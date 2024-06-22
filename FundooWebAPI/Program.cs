@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 using System.Text;
 using UserBLL.Interface;
 using UserBLL.Service;
@@ -49,6 +50,8 @@ namespace FundooWebAPI
 
             builder.Services.AddSingleton<JwtTokenGenerator>();
 
+            builder.Services.AddScoped<ICacheService, CacheService>();
+
             // CORS Policy
             var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -69,11 +72,32 @@ namespace FundooWebAPI
             // Getting Configuration object which now represents appsettings.json inside our program
             var configuration = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json").Build();
 
+            Console.WriteLine(configuration["RedisURL"]);
             // Getting Values from AppSettings.json
             var config = builder.Configuration;
             var secretKey = Environment.GetEnvironmentVariable("SecretKey");
             var issuer = config["Jwt:ValidIssuer"];
             var audience = config["Jwt:ValidAudience"];
+
+            // Redis Connection 
+            // Configure Lazy<ConnectionMultiplexer>
+            builder.Services.AddSingleton<Lazy<ConnectionMultiplexer>>(sp =>
+            {
+                var configurations = sp.GetRequiredService<IConfiguration>();
+                return new Lazy<ConnectionMultiplexer>(() =>
+                {
+                    return ConnectionMultiplexer.Connect(configurations["RedisURL"]);
+                });
+            });
+
+            // AddStackExchangeRedisCache if using distributed cache
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = builder.Configuration["RedisURL"];
+                options.InstanceName = "SampleInstance";
+            });
+
+
 
             // JWT Authentication service 
             builder.Services.AddAuthentication().AddJwtBearer("CrudScheme", options =>
