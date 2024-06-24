@@ -10,17 +10,20 @@ using UserRLL.Context;
 using UserRLL.Entity;
 using UserRLL.Interface;
 using UserRLL.Exceptions;
+using UserRLL.Utilities;
 
 
 namespace UserRLL.Services
 {
     public class NoteRL : INoteRL
     {
-        private readonly UserDBContext _dbContext; 
+        private readonly UserDBContext _dbContext;
+        private readonly ICacheService _cacheService;
 
-        public NoteRL(UserDBContext dbContext)
+        public NoteRL(UserDBContext dbContext, ICacheService cacheService)
         {
-            _dbContext = dbContext; 
+            _dbContext = dbContext;
+            _cacheService = cacheService;
         }
 
         public NoteEntity CreateNote(NoteModel note,int UserId)
@@ -29,6 +32,8 @@ namespace UserRLL.Services
             try
             {
                 _dbContext.Notes.Add(noteEntity);
+                // Removing old Cache data before Adding new note
+                _cacheService.RemoveData("notes");
                 _dbContext.SaveChanges();
                 return noteEntity;
             }
@@ -47,6 +52,7 @@ namespace UserRLL.Services
                 if (note != null)
                 {
                     _dbContext.Notes.Remove(note);
+                    _cacheService.RemoveData("notes");
                     _dbContext.SaveChanges();
                     return note;
                 }
@@ -81,7 +87,14 @@ namespace UserRLL.Services
             {
                 var notes = _dbContext.Notes.Where(p => p.UserEntityId == UserId).ToList();
                 if(notes != null)
+                {
+                    var expirationTime = DateTimeOffset.Now.AddMinutes(5.0);
+                    // Persisting Fetched data from database in Cache
+                    _cacheService.SetData<IList<NoteEntity>>("notes", notes, expirationTime);
                     return notes;
+
+                }
+                 
                 throw new NoteException($"Empty Notes");
             }
             catch (Exception )
@@ -99,8 +112,8 @@ namespace UserRLL.Services
                 if (existingNote != null)
                 {
                     existingNote.Title = note.Title;
-                    existingNote.Description = note.Description; 
-
+                    existingNote.Description = note.Description;
+                    _cacheService.RemoveData("notes");
                     _dbContext.SaveChanges();
                     return existingNote;
                 }

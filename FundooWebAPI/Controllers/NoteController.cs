@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 using System.Xml.Linq;
 using UserBLL.Interface;
 using UserModelLayer;
 using UserRLL.Entity;
+using UserRLL.Utilities;
 
 namespace FundoWebAPI.Controllers
 {
@@ -18,18 +20,20 @@ namespace FundoWebAPI.Controllers
     {
         private readonly INoteBL noteBL;
         private readonly string UserKey = "UserId";
+        private readonly ICacheService _cacheService;
 
-        public NoteController(INoteBL noteBL)
+        public NoteController(INoteBL noteBL, ICacheService cacheService)
         {
             this.noteBL = noteBL;
+            this._cacheService = cacheService;
         }
 
         [HttpPost]
         public ResponseModel<NoteEntity> AddNote([FromBody] NoteModel model)
         {
             int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            // Using Session State Management
-            HttpContext.Session.SetInt32(UserKey, UserId);
+            //// Using Session State Management
+            //HttpContext.Session.SetInt32(UserKey, UserId);
 
             try
             {
@@ -57,6 +61,15 @@ namespace FundoWebAPI.Controllers
             {
                 var userId = UserId.Value;
                 Console.WriteLine($"Session State Successful : {userId}");
+                // Fetching data from Cache
+                NoteEntity noteEntity = null;
+                var cacheData = _cacheService.GetData<IEnumerable<NoteEntity>>("notes");
+                if (cacheData != null)
+                {
+                    noteEntity = cacheData.Where(x => x.Id == id && x.UserEntityId == UserId.Value).FirstOrDefault();
+                    return new ResponseModel<NoteEntity> { Message = "Fetched note from cache", Data = noteEntity };
+                }
+
                 try
                 {
                     var note = noteBL.GetNote(id, userId);
@@ -71,17 +84,21 @@ namespace FundoWebAPI.Controllers
 
         [Route("notes")]
         [HttpGet]
-        public ResponseModel<IList<NoteEntity>> GetNotes()
+        public ResponseModel<IEnumerable<NoteEntity>> GetNotes()
         {
             int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            // Retrieve Data from Cache
+            var cacheData = _cacheService.GetData<IEnumerable<NoteEntity>>("notes");
+            if (cacheData != null)
+                return new ResponseModel<IEnumerable<NoteEntity>>() { Data = cacheData, Message = "Notes Retrived from Cache" };
             try
             {
                 IList<NoteEntity> Notes = noteBL.GetNotes(UserId);
-                return new ResponseModel<IList<NoteEntity>>() { Data = Notes, Message = "Notes Retrived" };
+                return new ResponseModel<IEnumerable<NoteEntity>>() { Data = Notes, Message = "Notes Retrived" };
             }
             catch (Exception ex)
             {
-                return new ResponseModel<IList<NoteEntity>>() { Data = null, Message = ex.Message , Status = false};
+                return new ResponseModel<IEnumerable<NoteEntity>>() { Data = null, Message = ex.Message , Status = false};
             }
         }
 

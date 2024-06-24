@@ -82,6 +82,9 @@ namespace FundooWebAPI.Controllers
             try
             {
                 UserEntity user = userBLL.Login(model);
+                // Using Session State Management
+                HttpContext.Session.SetInt32("UserId", user.Id);
+
                 var token = _jwtTokenGenerator.GenerateCrudToken(Convert.ToString(user.Id), user.UserName, TimeSpan.FromMinutes(15));
                 ResponseModel<string> responseModel = new ResponseModel<string>() { Message = "LoggedIn Successfully!", Data =  token};
                 return responseModel;
@@ -99,16 +102,16 @@ namespace FundooWebAPI.Controllers
         {
             try
             {
-                // Searching Data in Cache
-                var cacheData = _cacheService.GetData<IEnumerable<UserEntity>>("products");
-                if(cacheData != null)
-                {
-                    return new ResponseModel<IEnumerable<UserEntity>>() { Message = "Users Retrieved from Cache", Data = cacheData };
-                }
+                //// Searching Data in Cache
+                //var cacheData = _cacheService.GetData<IEnumerable<UserEntity>>("products");
+                //if(cacheData != null)
+                //{
+                //    return new ResponseModel<IEnumerable<UserEntity>>() { Message = "Users Retrieved from Cache", Data = cacheData };
+                //}
                 var users = await userBLL.GetUsers();
                 var expirationTime = DateTimeOffset.Now.AddMinutes(10.0);
-                // Persisting data in Database 
-                _cacheService.SetData<IEnumerable<UserEntity>>("products",users,expirationTime);
+                //// Persisting data in Cache
+                //_cacheService.SetData<IEnumerable<UserEntity>>("products",users,expirationTime);
                 return new ResponseModel<IEnumerable<UserEntity>>() { Message = "Users Retrieved Successfully", Data = users };
             }
             catch (Exception)
