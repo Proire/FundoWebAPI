@@ -12,20 +12,12 @@ namespace FundooWebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController : ControllerBase
+    public class UserController(IUserBL userBLL, EmailSender emailSender, JwtTokenGenerator jwtTokenGenerator, ICacheService cacheService) : ControllerBase
     {
-        private readonly IUserBL userBLL;
-        private readonly EmailSender _emailSender;
-        private readonly JwtTokenGenerator _jwtTokenGenerator;
-        private readonly ICacheService _cacheService;
-        public UserController( IUserBL userBLL, IConfiguration configuration, EmailSender emailSender, JwtTokenGenerator jwtTokenGenerator, ICacheService cacheService)
-        {
-            this.userBLL = userBLL;
-            _emailSender = emailSender;
-            _jwtTokenGenerator = jwtTokenGenerator;
-            _cacheService = cacheService;
-        }
-
+        private readonly IUserBL userBLL = userBLL;
+        private readonly EmailSender _emailSender = emailSender;
+        private readonly JwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
+        private readonly ICacheService _cacheService = cacheService;
 
         [HttpPost]
         [Route("/register")]
@@ -51,11 +43,11 @@ namespace FundooWebAPI.Controllers
             try
             {
                 var updateUser = await userBLL.UpdateUser(id, model);
-                return new ResponseModel<UserEntity>() { Message = "User Updated Successfully",Data=updateUser };
+                return new ResponseModel<UserEntity>() { Message = "User Updated Successfully", Data = updateUser };
             }
-            catch(Exception e)
+            catch (UserException e)
             {
-                return new ResponseModel<UserEntity>() { Status = false,Message = e.Message, Data = null };
+                return new ResponseModel<UserEntity>() { Status = false, Message = e.Message, Data = null };
             }
         }
 
@@ -68,7 +60,7 @@ namespace FundooWebAPI.Controllers
                 var updateUser = await userBLL.DeleteUser(id);
                 return new ResponseModel<UserEntity>() { Message = "User Deleted Successfully", Data = updateUser };
             }
-            catch (Exception e)
+            catch (UserException e)
             {
                 return new ResponseModel<UserEntity>() { Status = false, Message = e.Message, Data = null };
             }
@@ -82,11 +74,12 @@ namespace FundooWebAPI.Controllers
             try
             {
                 UserEntity user = userBLL.Login(model);
-                // Using Session State Management
+                // Using Session State Management - Setting the UserId
                 HttpContext.Session.SetInt32("UserId", user.Id);
 
+                // token generated for further logged in
                 var token = _jwtTokenGenerator.GenerateCrudToken(Convert.ToString(user.Id), user.UserName, TimeSpan.FromMinutes(15));
-                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = "LoggedIn Successfully!", Data =  token};
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = "LoggedIn Successfully!", Data = token };
                 return responseModel;
             }
             catch (UserException ex)
@@ -97,24 +90,30 @@ namespace FundooWebAPI.Controllers
         }
 
         [HttpGet]
+        [Route("/user/{id}")]
+        public ResponseModel<UserEntity> GetUser(int id)
+        {
+            try
+            {
+                var User = userBLL.GetUserById(id);
+                return new ResponseModel<UserEntity>() { Message = "User retrieved Successfully", Data = User };
+            }
+            catch (UserException e)
+            {
+                return new ResponseModel<UserEntity>() { Status = false, Message = e.Message, Data = null };
+            }
+        }
+
+        [HttpGet]
         [Route("/users")]
         public async Task<ResponseModel<IEnumerable<UserEntity>>> GetUsers()
         {
             try
             {
-                //// Searching Data in Cache
-                //var cacheData = _cacheService.GetData<IEnumerable<UserEntity>>("products");
-                //if(cacheData != null)
-                //{
-                //    return new ResponseModel<IEnumerable<UserEntity>>() { Message = "Users Retrieved from Cache", Data = cacheData };
-                //}
                 var users = await userBLL.GetUsers();
-                var expirationTime = DateTimeOffset.Now.AddMinutes(10.0);
-                //// Persisting data in Cache
-                //_cacheService.SetData<IEnumerable<UserEntity>>("products",users,expirationTime);
                 return new ResponseModel<IEnumerable<UserEntity>>() { Message = "Users Retrieved Successfully", Data = users };
             }
-            catch (Exception)
+            catch (UserException)
             {
                 return new ResponseModel<IEnumerable<UserEntity>>() { Status = false, Message = "Problem Occured while retrieving users", Data = null };
             }

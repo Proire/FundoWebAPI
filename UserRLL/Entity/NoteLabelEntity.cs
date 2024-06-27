@@ -11,7 +11,8 @@ namespace UserRLL.Entity
     {
         public int NoteId { get; set; }
 
-        public NoteEntity Note { get; set; } 
+        [JsonIgnore]
+        public NoteEntity Note { get; set; } // Inverse Navigation Property 
         public int LabelId { get; set; }
 
         public LabelEntity Label { get; set; }

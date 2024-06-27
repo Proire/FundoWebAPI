@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace UserRLL.Entity
 {
@@ -21,6 +22,7 @@ namespace UserRLL.Entity
 
         public int? NoteEntityId { get; set; }
 
+        [JsonIgnore]
         public NoteEntity? NoteEntity { get; set; }
 
     }

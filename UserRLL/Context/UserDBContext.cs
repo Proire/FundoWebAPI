@@ -9,12 +9,8 @@ using UserRLL.Entity;
 
 namespace UserRLL.Context
 {
-    public class UserDBContext : DbContext
+    public class UserDBContext(DbContextOptions<UserDBContext> options) : DbContext(options)
     {
-        public UserDBContext(DbContextOptions<UserDBContext> options): base(options)
-        {
-        }
-
         public DbSet<UserEntity> Users { get; set; }
 
         public DbSet<NoteEntity> Notes { get; set; }

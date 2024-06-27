@@ -40,12 +40,12 @@ namespace UserRLL.Entity
             return $"{Title} : {Description}";
         }
 
+        [JsonIgnore]
         public UserEntity UserEntity { get; set; }   // Inverse Navigation Property 
 
-        [JsonIgnore]
         public ICollection<NoteLabelEntity> NoteLabels { get; set; } // Navigation property
 
-        public ICollection<CollaboraterEntity> CollaboraterEntities { get; set; } // Navigation property
+        public ICollection<CollaboraterEntity> CollaboraterEntities { get; set; }// Navigation property
 
     }
 }

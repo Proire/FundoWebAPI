@@ -33,22 +33,22 @@ namespace FundooWebAPI
             builder.Services.AddTransient<EmailSender>();
 
             // Add Services
-            builder.Services.AddTransient<IUserBL,UserBL>();
-            builder.Services.AddTransient<IUserRL,UserRL>();
+            builder.Services.AddScoped<IUserBL,UserBL>();
+            builder.Services.AddScoped<IUserRL,UserRL>();
 
-            builder.Services.AddTransient<INoteBL, NoteBL>();
-            builder.Services.AddTransient<INoteRL ,NoteRL>();
+            builder.Services.AddScoped<INoteBL, NoteBL>();
+            builder.Services.AddScoped<INoteRL ,NoteRL>();
 
-            builder.Services.AddTransient<ILabelBL, LabelBL>();
-            builder.Services.AddTransient<ILabelRL, LabelRL>();
+            builder.Services.AddScoped<ILabelBL, LabelBL>();
+            builder.Services.AddScoped<ILabelRL, LabelRL>();
 
-            builder.Services.AddTransient<INoteLabelBL, NoteLabelBL>();
-            builder.Services.AddTransient<INoteLabelRL, NoteLabelRL>();
+            builder.Services.AddScoped<INoteLabelBL, NoteLabelBL>();
+            builder.Services.AddScoped<INoteLabelRL, NoteLabelRL>();
 
-            builder.Services.AddTransient<ICollaboratorBL, CollaboratorBL>();
-            builder.Services.AddTransient<ICollaboratorRL, CollaboratorRL>();
+            builder.Services.AddScoped<ICollaboratorBL, CollaboratorBL>();
+            builder.Services.AddScoped<ICollaboratorRL, CollaboratorRL>();
 
-            builder.Services.AddSingleton<JwtTokenGenerator>();
+            builder.Services.AddScoped<JwtTokenGenerator>();
 
             builder.Services.AddScoped<ICacheService, CacheService>();
 
@@ -70,9 +70,9 @@ namespace FundooWebAPI
             builder.Configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
             // Getting Configuration object which now represents appsettings.json inside our program
-            var configuration = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json").Build();
-
+            IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json").Build();
             Console.WriteLine(configuration["RedisURL"]);
+
             // Getting Values from AppSettings.json
             var config = builder.Configuration;
             var secretKey = Environment.GetEnvironmentVariable("SecretKey");
@@ -86,7 +86,7 @@ namespace FundooWebAPI
                 var configurations = sp.GetRequiredService<IConfiguration>();
                 return new Lazy<ConnectionMultiplexer>(() =>
                 {
-                    return ConnectionMultiplexer.Connect(configurations["RedisURL"]);
+                    return ConnectionMultiplexer.Connect(configurations["RedisURL"] ?? throw new Exception("Provide Correct URL to Connect to Redis Server"));
                 });
             });
 
@@ -110,7 +110,7 @@ namespace FundooWebAPI
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = issuer,
                     ValidAudience = audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey ?? throw new Exception("Provide Secret Key")))
                 };
             })
             .AddJwtBearer("UserValidationScheme", options =>
@@ -123,7 +123,7 @@ namespace FundooWebAPI
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = issuer,
                     ValidAudience = audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey ?? throw new Exception("Provide Secret Key")))
                 };
             })
             .AddJwtBearer("EmailVerificationScheme", options =>
@@ -136,7 +136,7 @@ namespace FundooWebAPI
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = issuer,
                     ValidAudience = audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey ?? throw new Exception("Provide Secret Key")))
                 };
             });
 
