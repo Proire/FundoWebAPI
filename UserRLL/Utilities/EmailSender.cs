@@ -1,19 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using MimeKit;
-using Microsoft.Extensions.Options;
 using MimeKit.Text;
-using MailKit;
 using MailKit.Security;
 using MailKit.Net.Smtp;
-using static System.Net.Mime.MediaTypeNames;
 using UserModelLayer;
-using Azure.Core;
 
 namespace UserRLL.Utilities
 {

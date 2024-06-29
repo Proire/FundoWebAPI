@@ -39,7 +39,7 @@ namespace UserRLL.Services
         {
             try
             {
-                var user = Context.Users.Include(x=>x.Notes).FirstOrDefault(p => p.Id == id);
+                var user = Context.Users.Include(x => x.Notes).ThenInclude(y => y.NoteLabels).ThenInclude(z=>z.Label).Include(x => x.Notes).ThenInclude(y => y.CollaboraterEntities).FirstOrDefault(p => p.Id == id);
                 if (user != null)
                     return user;
                 throw new UserException($"No User Found with id : {id}");

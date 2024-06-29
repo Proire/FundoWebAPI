@@ -52,6 +52,8 @@ namespace FundooWebAPI
 
             builder.Services.AddScoped<ICacheService, CacheService>();
 
+            builder.Services.AddScoped<IRabitMQProducer, RabitMQProducer>();
+
             // CORS Policy
             var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -68,10 +70,6 @@ namespace FundooWebAPI
 
             // Add Appsettings Configuration Builder 
             builder.Configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-            // Getting Configuration object which now represents appsettings.json inside our program
-            IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json").Build();
-            Console.WriteLine(configuration["RedisURL"]);
 
             // Getting Values from AppSettings.json
             var config = builder.Configuration;

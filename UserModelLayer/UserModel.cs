@@ -1,22 +1,26 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace UserModelLayer
 {
     public class UserModel
-    { 
-        public string Name { get; set; } = string.Empty;
+    {
+        [DefaultValue("John")]
+        public string Name { get; set; } = "";
 
-        public string UserName { get; set; } = string.Empty;
+        [DefaultValue("dummy_username")]
+        public string UserName { get; set; } = "";
 
-        public string Password { get; set; } = string.Empty;
+        [DefaultValue("dummy_password")]
+        public string Password { get; set; } = "";
 
-        public string PhoneNumber { get; set; } = string.Empty;
+        [DefaultValue("1234567890")]
+        public string PhoneNumber { get; set; } = "1234567890";
 
-        public string Role { get; set; } = string.Empty;
+        [DefaultValue("user")]
+        public string Role { get; set; } = "";
 
-        public string Email { get; set; } = string.Empty;
-
-        public bool IsEmailVerified { get; set; } = false;
-
+        [DefaultValue("ABC@gmail.com")]
+        public string Email { get; set; } = "";
     }
 }

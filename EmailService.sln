@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserRLL", "UserRLL\UserRLL.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserModelLayer", "UserModelLayer\UserModelLayer.csproj", "{02F58D9E-D296-48EA-9B41-528B3BF6A3FE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsumeApp", "ConsumeApp\ConsumeApp.csproj", "{C3F43460-EBD8-4C59-87E4-5733D0242096}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{02F58D9E-D296-48EA-9B41-528B3BF6A3FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02F58D9E-D296-48EA-9B41-528B3BF6A3FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02F58D9E-D296-48EA-9B41-528B3BF6A3FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3F43460-EBD8-4C59-87E4-5733D0242096}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3F43460-EBD8-4C59-87E4-5733D0242096}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3F43460-EBD8-4C59-87E4-5733D0242096}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3F43460-EBD8-4C59-87E4-5733D0242096}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -69,7 +69,7 @@ namespace UserRLL.Services
         {
             try
             {
-                var note = _dbContext.Notes.FirstOrDefault(p => p.Id == id && p.UserEntityId==UserId);
+                var note = _dbContext.Notes.Include(x=>x.NoteLabels).ThenInclude(y=>y.Label).Include(p=>p.CollaboraterEntities).FirstOrDefault(p => p.Id == id && p.UserEntityId==UserId);
                 if (note != null)
                     return note;
                 throw new NoteException($"No Note Found with id : {id}");
@@ -85,7 +85,7 @@ namespace UserRLL.Services
         {
             try
             {
-                var notes = _dbContext.Notes.Where(p => p.UserEntityId == UserId).ToList();
+                var notes = _dbContext.Notes.Include(x=>x.NoteLabels).ThenInclude(y=>y.Label).Where(p => p.UserEntityId == UserId).ToList();
                 if(notes != null)
                 {
                     var expirationTime = DateTimeOffset.Now.AddMinutes(5.0);

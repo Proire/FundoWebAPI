@@ -25,19 +25,18 @@ namespace FundoWebAPI.Controllers
         public NoteController(INoteBL noteBL, ICacheService cacheService)
         {
             this.noteBL = noteBL;
-            this._cacheService = cacheService;
+            _cacheService = cacheService;
         }
 
         [HttpPost]
         public ResponseModel<NoteEntity> AddNote([FromBody] NoteModel model)
         {
             int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            //// Using Session State Management
-            //HttpContext.Session.SetInt32(UserKey, UserId);
 
             try
             {
                 var addedNote = noteBL.CreateNote(model,UserId);
+                // Send the inserted data to queue while consumer will intake it
                 return new ResponseModel<NoteEntity> { Message="Note Added", Data = addedNote };
             }
             catch (Exception ex)

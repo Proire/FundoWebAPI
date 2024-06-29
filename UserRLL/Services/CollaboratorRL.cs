@@ -1,4 +1,5 @@
-﻿using Microsoft.Identity.Client;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -49,10 +50,15 @@ namespace UserRLL.Services
         {
             try
             {
+                var isSameUser = _dbContext.Notes.Include(x => x.UserEntity).FirstOrDefault(x => x.Id == noteId && x.UserEntity.Email == collaborator) ?? throw new UserException($"Owner cannot be Collaborater");
                 var validUser = _dbContext.Users.FirstOrDefault(p => p.Email == collaborator) ?? throw new UserException($"No User Found with email : {collaborator}");
-                var newCollabarotor = new CollaboraterEntity() { CollaboratorEmail = collaborator , NoteEntityId = noteId};
-                _dbContext.Collaboraters.Add(newCollabarotor);
-                _dbContext.SaveChanges();
+                if (!_dbContext.Collaboraters.Any(x => x.CollaboratorEmail == collaborator))
+                {
+                    var newCollabarotor = new CollaboraterEntity() { CollaboratorEmail = collaborator, NoteEntityId = noteId };
+                    _dbContext.Collaboraters.Add(newCollabarotor);
+                    _dbContext.SaveChanges();
+                }
+                throw new UserException($"{collaborator} already exists");
             }
             catch (Exception e)
             {

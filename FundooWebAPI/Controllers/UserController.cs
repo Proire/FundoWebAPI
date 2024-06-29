@@ -12,12 +12,13 @@ namespace FundooWebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController(IUserBL userBLL, EmailSender emailSender, JwtTokenGenerator jwtTokenGenerator, ICacheService cacheService) : ControllerBase
+    public class UserController(IUserBL userBLL, EmailSender emailSender, JwtTokenGenerator jwtTokenGenerator, ICacheService cacheService, IRabitMQProducer rabbitMQProducer) : ControllerBase
     {
         private readonly IUserBL userBLL = userBLL;
         private readonly EmailSender _emailSender = emailSender;
         private readonly JwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
         private readonly ICacheService _cacheService = cacheService;
+        private readonly IRabitMQProducer _rabbitMQProducer =  rabbitMQProducer;
 
         [HttpPost]
         [Route("/register")]
@@ -26,12 +27,14 @@ namespace FundooWebAPI.Controllers
             try
             {
                 UserEntity model = userBLL.AddUser(user);
+                // sending mail to user using rabbitmq utility class 
+                _rabbitMQProducer.SendMessage(model.Email);
                 ResponseModel<string> responseModel = new ResponseModel<string>() { Data = model.ToString(), Message = "User Added SuccessFully, Go to Login" };
                 return responseModel;
             }
             catch (UserException ex)
             {
-                ResponseModel<string> responseModel = new ResponseModel<string>() { Data = null, Message = ex.Message, Status = false };
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Data = "No Data, Sorry Try Again", Message = ex.Message, Status = false };
                 return responseModel;
             }
         }
@@ -84,7 +87,7 @@ namespace FundooWebAPI.Controllers
             }
             catch (UserException ex)
             {
-                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = ex.Message, Data = string.Empty, Status = false };
+                ResponseModel<string> responseModel = new ResponseModel<string>() { Message = ex.Message, Data = "Problem Occured While Sign in, Try again", Status = false };
                 return responseModel;
             }
         }
@@ -138,7 +141,7 @@ namespace FundooWebAPI.Controllers
             }
             catch (UserException ex)
             {
-                return new ResponseModel<string>() { Message = ex.Message, Data = string.Empty, Status = false };
+                return new ResponseModel<string>() { Message = ex.Message, Data = "Problem Occured While Finding Email, Try again", Status = false };
             }
         }
 
