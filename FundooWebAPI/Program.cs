@@ -25,7 +25,6 @@ namespace FundooWebAPI
             // Add services to the container.
 
             // Logging
-            // Add NLog
             builder.Services.AddLogging(logging =>
             {
                 logging.ClearProviders();
@@ -71,6 +70,7 @@ namespace FundooWebAPI
             builder.Services.AddScoped<IRabitMQProducer, RabitMQProducer>();
 
             builder.Services.AddScoped<KafkaProducerService>();
+            builder.Services.AddScoped<KafkaAdminService>();
 
             // CORS Policy
             var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -174,6 +174,14 @@ namespace FundooWebAPI
             builder.Services.AddSwaggerGen();
             
             var app = builder.Build();
+
+            // Create Kafka topic
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var kafkaAdminService = services.GetRequiredService<KafkaAdminService>();
+                kafkaAdminService.CreateTopicAsync();
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

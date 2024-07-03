@@ -1,3 +1,4 @@
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -8,12 +9,13 @@ using UserModelLayer;
 using UserRLL.Entity;
 using UserRLL.Exceptions;
 using UserRLL.Utilities;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace FundooWebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController(IUserBL userBLL, EmailSender emailSender, JwtTokenGenerator jwtTokenGenerator, ICacheService cacheService, IRabitMQProducer rabbitMQProducer, KafkaProducerService kafkaProducerService, ILogger<UserController> logger) : ControllerBase
+    public class UserController(IUserBL userBLL, EmailSender emailSender, JwtTokenGenerator jwtTokenGenerator, ICacheService cacheService, IRabitMQProducer rabbitMQProducer, KafkaProducerService kafkaProducerService, ILogger<UserController> logger, IConfiguration configuration) : ControllerBase
     {
         private readonly IUserBL userBLL = userBLL;
         private readonly EmailSender _emailSender = emailSender;
@@ -22,7 +24,7 @@ namespace FundooWebAPI.Controllers
         private readonly IRabitMQProducer _rabbitMQProducer =  rabbitMQProducer;
         private readonly KafkaProducerService _kafkaProducerService = kafkaProducerService;
         private readonly ILogger<UserController> _logger = logger;
-
+        private readonly IConfiguration _configuration = configuration;
 
         [HttpPost]
         [Route("/register")]
@@ -50,10 +52,20 @@ namespace FundooWebAPI.Controllers
             try
             {
                 var updateUser = await userBLL.UpdateUser(id, model);
-
-                //  Kafka update message to specific topic 
+                var config = new ProducerConfig { BootstrapServers = _configuration["Kafka:BootstrapServers"] };
+                IProducer<Null, string> _producer = new ProducerBuilder<Null, string>(config).Build();
+                int partition1 = 0;
+                int partition2 = 1;
                 var message = JsonConvert.SerializeObject(updateUser);
-                await _kafkaProducerService.ProduceAsync("topic", message);
+                if (updateUser.Id % 2 == 0)
+                {
+                    //  Kafka update message to specific partition (0) of topic
+                    await _producer.ProduceAsync(new TopicPartition(_configuration["Kafka:Topic"], partition1), new Message<Null, string> { Value = message });
+                }
+                else
+                {
+                    await _producer.ProduceAsync(new TopicPartition(_configuration["Kafka:Topic"], partition2), new Message<Null, string> { Value = message });
+                }
                 return new ResponseModel<UserEntity>() { Message = "User Updated Successfully", Data = updateUser };
             }
             catch (UserException e)

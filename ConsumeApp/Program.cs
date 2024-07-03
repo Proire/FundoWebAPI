@@ -9,12 +9,10 @@ using Microsoft.Extensions.Configuration;
 using Confluent.Kafka;
 using Org.BouncyCastle.Utilities.Collections;
 using static Confluent.Kafka.ConfigPropertyNames;
-using ConsumeApp;
-using ConsumeApp.ConsumeApp;
+using KafkaConsumer;
 
 internal class Program
 {
-   
     private static async Task Main(string[] args)
     {
         // Representing configuration settings
@@ -24,8 +22,10 @@ internal class Program
         // kafka
         Console.WriteLine("Consumer started. Press [Enter] to stop.");
         var cancellationTokenSource = new CancellationTokenSource();
-        var consumer = new KafkaConsumer(config);
-        var consumerTask = consumer.StartConsumingAsync(cancellationTokenSource.Token);
+
+        var consumer1 = new KafkaConsumerService(config, "MyConsumerGroup", 1);
+
+        var consumerTask1 = consumer1.StartConsumingAsync(cancellationTokenSource.Token);
 
         Console.ReadLine();
 
@@ -33,17 +33,13 @@ internal class Program
 
         try
         {
-            await consumerTask; // Wait for the consumer to complete
+            await consumerTask1; // Wait for the consumer to complete
         }
         catch (OperationCanceledException ie)
         {
             Console.WriteLine(ie.Message);
         }
-
-
     }
-
-   
 
     private static IConfiguration AppConfiguration()
     {
