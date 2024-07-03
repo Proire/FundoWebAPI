@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using UserBLL.Interface;
@@ -12,13 +13,16 @@ namespace FundooWebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController(IUserBL userBLL, EmailSender emailSender, JwtTokenGenerator jwtTokenGenerator, ICacheService cacheService, IRabitMQProducer rabbitMQProducer) : ControllerBase
+    public class UserController(IUserBL userBLL, EmailSender emailSender, JwtTokenGenerator jwtTokenGenerator, ICacheService cacheService, IRabitMQProducer rabbitMQProducer, KafkaProducerService kafkaProducerService, ILogger<UserController> logger) : ControllerBase
     {
         private readonly IUserBL userBLL = userBLL;
         private readonly EmailSender _emailSender = emailSender;
         private readonly JwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
         private readonly ICacheService _cacheService = cacheService;
         private readonly IRabitMQProducer _rabbitMQProducer =  rabbitMQProducer;
+        private readonly KafkaProducerService _kafkaProducerService = kafkaProducerService;
+        private readonly ILogger<UserController> _logger = logger;
+
 
         [HttpPost]
         [Route("/register")]
@@ -46,6 +50,10 @@ namespace FundooWebAPI.Controllers
             try
             {
                 var updateUser = await userBLL.UpdateUser(id, model);
+
+                //  Kafka update message to specific topic 
+                var message = JsonConvert.SerializeObject(updateUser);
+                await _kafkaProducerService.ProduceAsync("topic", message);
                 return new ResponseModel<UserEntity>() { Message = "User Updated Successfully", Data = updateUser };
             }
             catch (UserException e)
@@ -60,6 +68,7 @@ namespace FundooWebAPI.Controllers
         {
             try
             {
+                _logger.LogInformation("Handling Delete request for User by Admin using logger");
                 var updateUser = await userBLL.DeleteUser(id);
                 return new ResponseModel<UserEntity>() { Message = "User Deleted Successfully", Data = updateUser };
             }
@@ -80,7 +89,7 @@ namespace FundooWebAPI.Controllers
                 // Using Session State Management - Setting the UserId
                 HttpContext.Session.SetInt32("UserId", user.Id);
 
-                // token generated for further logged in
+                // token generated for further login
                 var token = _jwtTokenGenerator.GenerateCrudToken(Convert.ToString(user.Id), user.UserName, TimeSpan.FromMinutes(15));
                 ResponseModel<string> responseModel = new ResponseModel<string>() { Message = "LoggedIn Successfully!", Data = token };
                 return responseModel;

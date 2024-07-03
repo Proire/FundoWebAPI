@@ -62,7 +62,7 @@ namespace FundoWebAPI.Controllers
                 Console.WriteLine($"Session State Successful : {userId}");
                 // Fetching data from Cache
                 NoteEntity noteEntity = null;
-                var cacheData = _cacheService.GetData<IEnumerable<NoteEntity>>("notes");
+                var cacheData = _cacheService.GetData<IEnumerable<NoteEntity>>(Convert.ToString(UserId));
                 if (cacheData != null)
                 {
                     noteEntity = cacheData.Where(x => x.Id == id && x.UserEntityId == UserId.Value).FirstOrDefault();
@@ -87,7 +87,7 @@ namespace FundoWebAPI.Controllers
         {
             int UserId = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
             // Retrieve Data from Cache
-            var cacheData = _cacheService.GetData<IEnumerable<NoteEntity>>("notes");
+            var cacheData = _cacheService.GetData<IEnumerable<NoteEntity>>(Convert.ToString(UserId));
             if (cacheData != null)
                 return new ResponseModel<IEnumerable<NoteEntity>>() { Data = cacheData, Message = "Notes Retrived from Cache" };
             try

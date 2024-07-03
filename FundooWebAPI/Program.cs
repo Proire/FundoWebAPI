@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NLog.Extensions.Logging;
 using StackExchange.Redis;
 using System.Text;
 using UserBLL.Interface;
@@ -22,6 +23,21 @@ namespace FundooWebAPI
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            // Logging
+            // Add NLog
+            builder.Services.AddLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace); // Set minimum log level
+
+                // Add NLog as the logging provider
+                logging.AddNLog(new NLogProviderOptions
+                {
+                    CaptureMessageTemplates = true,
+                    CaptureMessageProperties = true
+                });
+            });
 
             // Add Controllers 
             builder.Services.AddControllers();
@@ -54,6 +70,8 @@ namespace FundooWebAPI
 
             builder.Services.AddScoped<IRabitMQProducer, RabitMQProducer>();
 
+            builder.Services.AddScoped<KafkaProducerService>();
+
             // CORS Policy
             var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -67,6 +85,7 @@ namespace FundooWebAPI
                                         .AllowAnyMethod();
                                   });
             });
+
 
             // Add Appsettings Configuration Builder 
             builder.Configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
